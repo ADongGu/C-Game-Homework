@@ -1,0 +1,116 @@
+#include<cstdlib>
+#include<cstdio>
+#include<cstring>
+#include<iostream>
+#include<algorithm>
+using namespace std;
+
+struct stuInfo {
+	char id[12];
+	char name[15];
+	double score;
+	struct stuInfo* next;
+};
+stuInfo* head;
+
+stuInfo* creatLink() {
+	head = (stuInfo*)malloc(sizeof(stuInfo));
+	char id[12];
+	char name[15];
+	double score;
+
+	stuInfo *p, *q;
+	p = q = head;
+
+	FILE* r = fopen("stuinfo.txt", "r");
+
+	if (r == NULL) {
+		printf("打不开文件");
+		return NULL;
+	}
+
+	while (fscanf(r, "%s %s %lf", id, name, &score) != EOF) {
+		q = (stuInfo*)malloc(sizeof(stuInfo)+1);
+		strcpy(q->id, id);
+		strcpy(q->name, name);
+		q->score = score;
+		p->next = q;
+		p = q;//尾插
+	}
+	p->next = NULL;
+	return head;
+}
+
+void insertLink() {
+	stuInfo* tmp = (stuInfo*)malloc(sizeof(stuInfo));
+	strcpy(tmp->id, "00008");
+	strcpy(tmp->name, "赵四");
+	tmp->score = 88;
+
+	stuInfo* p = head->next, * q;
+
+	while (p != NULL) {
+		if (strcmp(p->id, "00005") == 0) {
+			q = p->next;
+			p->next = tmp;
+			tmp->next = q;
+			return;
+		}
+		p = p->next;
+	}
+
+}
+
+void sortLink() {
+	int i, count = 0, num;//count记录链表结点的个数，num进行内层循环，
+	stuInfo* p, * q, * tail;//创建三个指针，进行冒泡排序
+	p = head;
+
+
+	while (p->next != NULL)	{
+		count++;
+		p = p->next;
+	}
+
+	for (i = 0; i < count - 1; i++)	{
+		num = count - i - 1;
+		q = head->next;
+		p = q->next;
+		tail = head;
+		while (num--){
+			if (q->score > p->score){//如果该结点的值大于后一个结点，则交换
+				q->next = p->next;
+				p->next = q;
+				tail->next = p;
+			}
+			tail = tail->next;
+			q = tail->next;
+			p = q->next;
+		}
+	}
+}
+
+void showLink() {
+	FILE* w = fopen("score.txt", "w");
+	stuInfo* p = head->next;
+	if (w == NULL) {
+		printf("读取失败");
+			return;
+	}
+	while (p) {
+		printf("%s\t%s\t%lf\n", p->id, p->name, p->score);
+		fprintf(w, "%s\t%s\t%lf\n", p->id, p->name, p->score);
+		p=p->next;
+	}
+	fprintf(w, "\n");
+	fclose(w);
+	return;
+}
+
+int main() {
+	head = creatLink();
+	insertLink();
+	sortLink();
+	showLink();
+	return 0;
+}
