@@ -1,0 +1,436 @@
+/* stdafx.cpp
+
+ stdafx.cpp : 只包括标准包含文件的源文件
+// 打地鼠.pch 将作为预编译头
+// stdafx.obj 将包含预编译类型信息
+  #include "stdafx.h"
+ TODO:  在 STDAFX.H 中
+ 引用任何所需的附加头文件，而不是在此文件中引用
+*/
+
+
+/* stdafx.h
+
+stdafx.h : 标准系统包含文件的包含文件，
+或是经常使用但不常更改的
+特定于项目的包含文件
+#pragma once
+
+//#include <SDKDDKVer.h>
+#include <stdio.h>
+#include <tchar.h>
+
+#include <graphics.h>	//图形库
+#include "refrence.h"	//参数
+#include <WinUser.h>
+#include <time.h>
+TODO:  在此处引用程序需要的其他头文件
+*/
+
+
+/*
+refrence.h
+
+#pragma once
+//窗口宽
+#define WINDOW_WIDTH		640
+//窗口高
+#define WINDOW_HEITH		478
+//背景图top高
+#define TOP_HEITH			192
+//背景图mid_up高
+#define MID_UP_HEITH		120
+//背景图mid_down高
+#define MID_DOWN_HEITH		167
+//背景图bottom高
+#define BOTTOM_HEITH		116
+//背景图mid_up起始y坐标
+#define MID_UP_BEGIN_Y		164
+//背景图mid_down起始y坐标
+#define MID_DOWN_BEGIN_Y	247
+//背景图bottom起始y坐标
+#define BOTTOM_BEGIN_Y		364
+//小地鼠宽
+#define LITTLE_MOUSE_WIDTH	90
+//小地鼠高
+#define LITTLE_MOUSE_HEITH  74
+//中地鼠宽
+#define MID_MOUSE_WIDTH		102
+//中地鼠高
+#define MID_MOUSE_HEITH		86
+//大地鼠宽
+#define BIG_MOUSE_WIDTH		122
+//大地鼠高
+#define BIG_MOUSE_HEITH		106
+
+
+//小地鼠x起始位置
+#define LITTLE_MOUSE_BEGIN_X	135
+//小地鼠y起始位置
+#define LITTLE_MOUSE_BEGIN_Y	191
+//小地鼠间距
+#define LITTLE_MOUSE_SPACE		137
+
+//中地鼠x起始位置
+#define MID_MOUSE_BEGIN_X		106
+//中地鼠y起始位置
+#define MID_MOUSE_BEGIN_Y		283
+//中地鼠间距
+#define MID_MOUSE_SPACE			156
+
+//大地鼠x起始位置
+#define BIG_MOUSE_BEGIN_X		65
+//大地鼠y起始位置
+#define BIG_MOUSE_BEGIN_Y		410
+//大地鼠间距
+#define BIG_MOUSE_SPACE			185
+
+
+*/
+
+
+
+
+
+
+
+
+// 打地鼠.cpp : 定义控制台应用程序的入口点。
+
+#include "stdafx.h"
+#define SPEED 10
+#define TEXT 1
+HWND hnd;
+
+struct dishu{
+	int x;
+	int y;
+
+	void moveUp(){ y -= 3; }		//地鼠往上走
+	void moveDown(){ y += 3; }		//地鼠往下走
+
+	bool isLive;
+};
+
+struct dishu ds[9];
+int m ;
+
+int count = 0;
+
+struct chizi{
+	int x;
+	int y;
+	int w;
+	int h;
+
+	bool down;
+
+	bool hit(){
+		if (m >= 0 && m < 3){
+			if (ds[m].y < LITTLE_MOUSE_BEGIN_Y){//地鼠已经升上来了
+				if ((ds[m].x - x) < w &&
+					x - ds[m].x < LITTLE_MOUSE_WIDTH &&
+					ds[m].y - y < h &&
+					y - ds[m].y < LITTLE_MOUSE_HEITH){//地鼠和锤子重叠
+					return true;
+				}
+			}
+		}
+
+		if (m >= 3 && m < 6){
+			if (ds[m].y < MID_MOUSE_BEGIN_Y){//地鼠已经升上来了
+				if ((ds[m].x - x) < w &&
+					x - ds[m].x < MID_MOUSE_WIDTH &&
+					ds[m].y - y < h &&
+					y - ds[m].y < MID_MOUSE_HEITH){//地鼠和锤子重叠
+					return true;
+				}
+			}
+		}
+		if (m >= 6 && m < 9){
+			if (ds[m].y < BIG_MOUSE_BEGIN_Y){//地鼠已经升上来了
+				if ((ds[m].x - x) < w &&
+					x - ds[m].x < BIG_MOUSE_WIDTH &&
+					ds[m].y - y < h &&
+					y - ds[m].y < BIG_MOUSE_HEITH){//地鼠和锤子重叠
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+};
+
+struct chizi cz;
+
+
+IMAGE bg1, bg2, bg3, bg4;
+IMAGE bg1_y, bg2_y, bg3_y, bg4_y;
+IMAGE little_mouse, mid_mouse, big_mouse;
+IMAGE little_mouse_y, mid_mouse_y, big_mouse_y;
+
+IMAGE little_mouse_die, mid_mouse_die, big_mouse_die;
+IMAGE little_mouse_die_y, mid_mouse_die_y, big_mouse_die_y;
+
+
+IMAGE hammer, hammer_y;
+IMAGE hammer_down, hammer_down_y;
+
+
+
+
+int fx[9] = { 0 };//fx数组元素值为0表示往上走，为1表示往下走
+
+void initGame(){//加载图片
+	loadimage(&bg1, "top.bmp");
+	loadimage(&bg2, "mid_up.bmp");
+	loadimage(&bg3, "mid_down.bmp");
+	loadimage(&bg4, "bottom.bmp");
+
+	loadimage(&bg1_y, "top_y.bmp");
+	loadimage(&bg2_y, "mid_up_y.bmp");
+	loadimage(&bg3_y, "mid_down_y.bmp");
+	loadimage(&bg4_y, "bottom_y.bmp");
+
+
+	loadimage(&little_mouse, "little_mouse.bmp");
+	loadimage(&mid_mouse, "mid_mouse.bmp");
+	loadimage(&big_mouse, "big_mouse.bmp");
+
+
+	loadimage(&little_mouse_y, "little_mouse_y.bmp");
+	loadimage(&mid_mouse_y, "mid_mouse_y.bmp");
+	loadimage(&big_mouse_y, "big_mouse_y.bmp");
+
+	loadimage(&little_mouse_die, "little_mouse_die.bmp");
+	loadimage(&mid_mouse_die, "mid_mouse_die.bmp");
+	loadimage(&big_mouse_die, "big_mouse_die.bmp");
+
+
+	loadimage(&little_mouse_die_y, "little_mouse_die_y.bmp");
+	loadimage(&mid_mouse_die_y, "mid_mouse_die_y.bmp");
+	loadimage(&big_mouse_die_y, "big_mouse_die_y.bmp");
+
+
+	for (int i = 0; i < 9; i++){
+		if (i >= 0 && i < 3){
+			ds[i].x = LITTLE_MOUSE_BEGIN_X + (i*LITTLE_MOUSE_SPACE);
+			ds[i].y = LITTLE_MOUSE_BEGIN_Y;
+		}
+		if (i >= 3 && i < 6){
+			ds[i].x = MID_MOUSE_BEGIN_X + ((i - 3)*MID_MOUSE_SPACE);
+			ds[i].y = MID_MOUSE_BEGIN_Y;
+		}
+		if (i >= 6 && i < 9){
+			ds[i].x = BIG_MOUSE_BEGIN_X + ((i - 6)*BIG_MOUSE_SPACE);
+			ds[i].y = BIG_MOUSE_BEGIN_Y;
+		}
+	}
+
+	
+	srand(time(NULL));
+	m = rand() % 9;
+	cz.w = 35;
+	cz.h = 70;
+
+	loadimage(&hammer, "hammer.bmp",cz.w,cz.h,true);
+	loadimage(&hammer_down, "hammer_down.bmp", cz.w, cz.h, true);
+	loadimage(&hammer_down_y, "hammer_down_y.bmp", cz.w, cz.h, true);
+	loadimage(&hammer_y, "hammer_y.bmp", cz.w, cz.h, true);
+
+
+	for (int i = 0; i < 9; i++)
+		ds[i].isLive = true;
+
+
+	cz.x = 15;
+	cz.y = 70;
+
+	cz.down = false;//一开始没有按下
+}
+
+int drawGame(){//贴图
+
+	putimage(0, 0, &bg1_y, SRCAND);
+	putimage(0, 0, &bg1, SRCPAINT);
+
+	//贴小地鼠图片
+	for (int i = 0; i < 3; i++){
+		if (ds[i].isLive){
+			putimage(ds[i].x, ds[i].y, &little_mouse_y, SRCAND);
+			putimage(ds[i].x, ds[i].y, &little_mouse, SRCPAINT);
+		}
+		else{
+			putimage(ds[i].x, ds[i].y, &little_mouse_die_y, SRCAND);
+			putimage(ds[i].x, ds[i].y, &little_mouse_die, SRCPAINT);
+		}
+		
+	}
+
+	putimage(0, MID_UP_BEGIN_Y, &bg2_y, SRCAND);
+	putimage(0, MID_UP_BEGIN_Y, &bg2,SRCPAINT);
+
+	//贴中地鼠图片
+	for (int i = 3; i < 6; i++){
+		if (ds[i].isLive){
+			putimage(ds[i].x, ds[i].y, &mid_mouse_y, SRCAND);
+			putimage(ds[i].x, ds[i].y, &mid_mouse, SRCPAINT);
+		}
+		else{
+			putimage(ds[i].x, ds[i].y, &mid_mouse_die_y, SRCAND);
+			putimage(ds[i].x, ds[i].y, &mid_mouse_die, SRCPAINT);
+		}
+		
+	}
+
+	putimage(0, MID_DOWN_BEGIN_Y, &bg3_y, SRCAND);
+	putimage(0, MID_DOWN_BEGIN_Y, &bg3, SRCPAINT);
+	
+	//贴大地鼠图片
+	for (int i = 6; i < 9; i++){
+		if (ds[i].isLive){
+			putimage(ds[i].x, ds[i].y, &big_mouse_y, SRCAND);
+			putimage(ds[i].x, ds[i].y, &big_mouse, SRCPAINT);
+		}
+		else{
+			putimage(ds[i].x, ds[i].y, &big_mouse_die_y, SRCAND);
+			putimage(ds[i].x, ds[i].y, &big_mouse_die, SRCPAINT);
+		}
+		
+	}
+
+	putimage(0, BOTTOM_BEGIN_Y, &bg4_y, SRCAND);
+	putimage(0, BOTTOM_BEGIN_Y, &bg4, SRCPAINT);
+
+
+
+	//画锤子
+	if (cz.down){
+		putimage(cz.x, cz.y, &hammer_down_y, SRCAND);
+		putimage(cz.x, cz.y, &hammer_down, SRCPAINT);
+	}
+	else{
+		putimage(cz.x, cz.y, &hammer_y, SRCAND);
+		putimage(cz.x, cz.y, &hammer, SRCPAINT);
+	}
+	
+
+
+	char str[20];
+	sprintf(str, "%06d", count);
+	settextcolor(BLUE);
+	outtextxy(WINDOW_WIDTH - 80, 40, str);
+
+	if (count == 20) {
+		MessageBox(NULL, "你已经打倒20个,游戏结束", "好家伙", MB_OKCANCEL);
+		return 0;
+	}
+	return 1;
+}
+
+
+VOID timerProc(HWND hWnd, UINT uInt, UINT_PTR ptr, DWORD dWord){
+	if (m >= 0 && m < 3){
+		if (fx[m] == 0){//move
+			ds[m].moveUp();
+			if (ds[m].y <= (LITTLE_MOUSE_BEGIN_Y - LITTLE_MOUSE_HEITH)){
+				fx[m] = 1;
+			}
+		}
+		else{
+			ds[m].moveDown();
+			if (ds[m].y >= LITTLE_MOUSE_BEGIN_Y){
+				fx[m] = 0;
+				ds[m].isLive = true;
+				m = rand() % 9;
+			}
+		}
+	}
+
+	if (m >= 3 && m < 6){
+		if (fx[m] == 0){
+			ds[m].moveUp();
+			if (ds[m].y <= (MID_MOUSE_BEGIN_Y - MID_MOUSE_HEITH)){
+				fx[m] = 1;
+			}
+		}
+		else{
+			ds[m].moveDown();
+			if (ds[m].y >= MID_MOUSE_BEGIN_Y){
+				fx[m] = 0;
+				ds[m].isLive = true;
+				m = rand() % 9;
+			}
+		}
+	}
+
+	if (m >= 6 && m < 9){
+		if (fx[m] == 0){
+			ds[m].moveUp();
+			if (ds[m].y <= (BIG_MOUSE_BEGIN_Y - BIG_MOUSE_HEITH)){
+				fx[m] = 1;
+			}
+		}
+		else{
+			ds[m].moveDown();
+			if (ds[m].y >= BIG_MOUSE_BEGIN_Y){
+				fx[m] = 0;
+				ds[m].isLive = true;
+				m = rand() % 9;
+				
+			}
+		}
+	}
+}
+
+MOUSEMSG msg;
+
+DWORD proc(LPVOID lpThreadParameter){
+	while (1){
+		msg = GetMouseMsg();
+		cz.x = msg.x - 15;
+		cz.y = msg.y - 15;
+		if (msg.mkLButton == true){//左键
+			cz.down = true;
+
+			if (cz.hit()){//看有没有在圆圈附近
+				count++;
+				ds[m].isLive = false;//打中了，打死地鼠
+			}
+		}
+
+		else cz.down = false;
+		printf("%d,%d\n", msg.x, msg.y);
+		
+	}
+	return 0;
+}
+
+
+int _tmain(){
+	HWND hWnd = initgraph(WINDOW_WIDTH, WINDOW_HEITH, SHOWCONSOLE);
+
+	HWND hnd = GetHWnd();
+	SetWindowText(hnd, "DongGu：打地鼠");// 标题框
+
+	initGame();
+
+#if TEXT
+
+	SetTimer(hWnd, 10086, SPEED, (TIMERPROC)timerProc);
+
+	DWORD id;
+	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)proc, NULL, NULL, &id);
+
+	int flag = 1;
+	while (flag){
+		BeginBatchDraw();
+		flag=drawGame();
+		EndBatchDraw();
+	}
+
+#endif
+	return 0;
+}
+
