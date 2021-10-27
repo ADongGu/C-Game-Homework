@@ -1,0 +1,155 @@
+#include <iostream>
+#include <algorithm>
+#include <cstdlib>
+#include <graphics.h>
+#include <Windows.h>
+using namespace std;
+
+int n, m;
+char outp[10];
+
+struct node
+{
+	int num, x, y, r;
+	bool flag;
+	node* next;
+};
+
+void talk();
+void hnt(node* li);
+void drew(node* li);
+void del(node* p);
+node* creatlink();
+void drew(int x, int y, int r);
+
+int main()
+{
+	initgraph(1000, 600, SHOWCONSOLE);
+	setbkcolor(YELLOW);
+	cleardevice();
+	BeginBatchDraw();
+
+
+	talk();
+
+	node* link = creatlink();
+	if (link == NULL) return 0;
+
+	drew(link);
+	hnt(link);
+	del(link);
+
+	EndBatchDraw();
+	closegraph();
+
+	return 0;
+}
+void talk()
+{
+	printf("请输入个数， 间隔数\n");
+	cin >> n >> m;
+}
+
+void drew(node* li)
+{
+
+	node* now = li->next;
+	while (now != NULL)
+	{
+		setfillcolor(GREEN);
+		fillcircle(now->x, now->y, now->r);
+		settextcolor(RED);
+
+		sprintf(outp, "%d", now->num);
+		outtextxy(now->x, now->y + 21, outp);
+		now = now->next;
+	}
+	FlushBatchDraw();
+	Sleep(1000);
+}
+
+void hnt(node* li)
+{
+	int leave = n;
+	int targe = (m - 1) % leave;
+
+	node* now = NULL, * tmp;
+	while (leave != 1)
+	{
+		int i;
+		now = li;
+
+		for (i = 0; i < leave; i++)
+		{
+			if (i == targe)
+			{
+				printf("-------删掉了第%d个圆-------\n\n", now->next->num);
+				tmp = now->next;
+				now->next = now->next->next;
+				free(tmp);
+				break;
+			}
+			now = now->next;
+		}
+
+		leave--;
+		targe = (i - 1 + m) % leave;
+		cleardevice();
+		drew(li);
+	}
+}
+void del(node* lk)
+{
+	node* p = lk->next;
+	while (p != NULL)
+	{
+		node* tmp = p->next;
+		free(p);
+		p = NULL;
+		p = tmp;
+	}
+}
+node* creatlink()
+{
+	node* p = (node*)malloc(sizeof node);
+	node* tmp;
+	node* now = NULL;
+	p->next = NULL;
+
+	int cnt = 1;
+	int line = 30;
+
+	for (int i = 1; i <= n; i++)
+	{
+
+		if (cnt > 10) {
+			cnt = 1;
+			line += 60;
+		}
+
+		tmp = (node*)malloc(sizeof node);
+		if (tmp == NULL) {
+			printf("no space\n");
+			return NULL;
+		}
+
+		tmp->x = 30 * cnt * 1.5;
+		tmp->y = line;
+		tmp->r = 20;
+		tmp->num = i;
+		++cnt;
+
+		if (p->next == NULL) {
+			tmp->next = p->next;
+			p->next = tmp;
+			now = tmp;
+		}
+		else {
+			tmp->next = now->next;
+			now->next = tmp;
+			now = tmp;
+		}
+	}
+
+	return p;
+}
