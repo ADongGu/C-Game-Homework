@@ -1,0 +1,155 @@
+#include <queue>
+#include <time.h>
+#include <fstream>
+#include <iostream>
+#include <algorithm>
+#include <stdlib.h>
+#include <Windows.h>
+#include <graphics.h>
+using namespace std;
+
+const int N = 50;
+const int MaxSize = 100;
+
+int n, m;
+int a[N][N];
+int vis[N][N];
+int sx, sy, ex, ey;
+queue<pair<int, int>>q;
+int High = 50, Width = 50;
+
+int dx[4] = { 1, 0, 0 ,-1 };
+int dy[4] = { 0, -1, 1, 0 };
+
+int judge(int x, int y)
+{
+	if ((vis[x][y] == -1 || !vis[x][y] && !a[x][y] && x > 0 && x <= n && y > 0 && y <= n)) return 1;
+	else return 0;
+}
+
+void draw()
+{
+	char s1[1000] = " 粉色： 开始 / 结束";
+	char s2[1000] = " 紫色： 走过的路径";
+	char s3[1000] = " 绿色： 可以走的空地";
+	char s4[1000] = " 蓝色： 陷阱";
+	outtextxy(800, 200, s1);
+	outtextxy(800, 250, s2);
+	outtextxy(800, 300, s3);
+	outtextxy(800, 350, s4);
+
+	for (int i = 1; i <= n; i++)
+		for (int j = 1; j <= m; j++)
+		{
+			if (vis[i][j] == -1) setfillcolor(0xFFB6C1); // qi wei
+			if (vis[i][j] == 1) setfillcolor(0x8B008B);						// 走过的
+			if (vis[i][j] == 0 && a[i][j] == 0)  setfillcolor(0x228B22);	// 没走过， 0
+			if (vis[i][j] == 0 && a[i][j] == 1)  setfillcolor(0xA0522D);	// 没走过 1 障碍
+
+			// zuo shang --- you xia
+			solidrectangle(j * (Width - 2), i * (High - 2),
+				(j + 1) * (Width - 2), (i + 1) * (High - 2));
+		}
+}
+
+void bfs()
+{
+	char user[100] = "1： bfs";
+	outtextxy(800, 400, user);
+	q.push(make_pair(sx, sy));
+	while (!q.empty())
+	{
+		auto p = q.front(); q.pop();
+		printf("%d %d\n", p.first, p.second);
+		for (int i = 0; i < 4; i++)
+		{
+			int nx = p.first + dx[i];
+			int ny = p.second + dy[i];
+			if (nx == ex && ny == ey) {
+				vis[nx][ny] = 1;
+				break;
+			}
+			if (judge(nx, ny)) {
+				vis[nx][ny] = 1;
+				q.push(make_pair(nx, ny));
+			}
+		}
+
+		draw();
+		Sleep(400);
+	}
+}
+
+int flag;
+void dfs(int x, int y, int op) {
+	printf("%d %d\n", x, y);
+	vis[x][y] = 1;
+	int n = 4;
+	if (op) n = 1e5;
+	for (int i = 0; i < n; i++)
+	{
+		int j;
+		if (op) {
+			srand(time(NULL)); /*根据当前时间设置“随机数种子”*/
+			char user[100] = "3 : dfs + rand() 随机化方向";
+			outtextxy(800, 400, user);
+			j = (i + rand()) % 4;
+		}
+		else {
+			char user[100] = "2: dfs";
+			outtextxy(800, 400, user);
+			j = i;
+		}
+		int nx = x + dx[j];
+		int ny = y + dy[j];
+
+		if (nx == ex && ny == ey) {
+			vis[nx][ny] = 1;
+			draw();
+			Sleep(400);
+			flag = 1;
+			return;
+		}
+
+		if (judge(nx, ny)) {
+			vis[nx][ny] = 1;
+			draw();
+			Sleep(400);
+			dfs(nx, ny, op);
+			vis[nx][ny] = 0;
+		}
+
+		if (flag) return;
+	}
+
+}
+
+int main()
+{
+
+	fstream f;
+	f.open("888.txt", ios::in);
+
+	initgraph(1000, 600, SHOWCONSOLE);
+	setbkcolor(BLACK);
+
+	f >> n >> m >> sx >> sy >> ex >> ey;
+
+	vis[sx][sy] = vis[ex][ey] = -1;
+
+	for (int i = 1; i <= n; i++)
+	{
+		for (int j = 1; j <= m; j++)
+			f >> a[i][j];
+	}
+
+	printf("1： bfs\n2: dfs\n3 : dfs + rand() 随机化方向\n");
+	int op; cin >> op;
+
+	if (op == 1) bfs();
+	else if (op == 2) dfs(sx, sy, 0);
+	else dfs(sx, sy, 1);
+
+	f.close();
+	return 0;
+}
