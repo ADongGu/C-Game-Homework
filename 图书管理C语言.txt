@@ -1,0 +1,193 @@
+#include <stdio.h>
+#include <string.h>
+#include <Windows.h>
+
+struct Node {
+	//序号、书名、作者、出版社和类别，类别分为专业书、工 具书、报告、小说和其他
+	char id[50];
+	char name[50];
+	char aut[50];
+	char pos[50];
+	char typ[50];
+}book[100000];
+
+typedef struct Node  node;
+
+void fun(node* x, node* tmp)
+{
+	strcpy((x)->id, tmp->id);
+	strcpy((x)->name, tmp->name);
+	strcpy((x)->aut, tmp->aut);
+	strcpy((x)->pos, tmp->pos);
+	strcpy((x)->typ, tmp->typ);
+}
+
+void show(node* x) {
+	printf("序号： "); printf("%s\n", x->id);
+	printf("书名： "); printf("%s\n", x->name);
+	printf("作者： "); printf("%s\n", x->aut);
+	printf("出版社： "); printf("%s\n", x->pos);
+	printf("类别： "); printf("%s\n", x->typ);
+}
+int i, j;
+
+int add(node x, int n) {
+	int f = 0;
+	for ( i = 1; i <= n; i++) {
+		if (strcmp(book[i].id, x.id) == 0) {
+			f = 1; break;
+		}
+	}
+
+	if (f) {
+		printf("有重复编号，异常退出\n");
+		return 0;
+	}
+	else return 1;
+}
+
+int main()
+{
+	int tot = 0;
+	while (1) {
+
+		printf("1: 录入书籍信息\n");
+		printf("2: 保存书籍信息\n");
+		printf("3: 浏览书籍信息\n");
+		printf("4: 查询书籍信息\n");
+		printf("5: 增加书籍信息\n");
+		printf("6: 删除书籍信息\n");
+		printf("7: 修改书籍信息\n");
+		printf("8: 按类别统计书籍的数量\n");
+		printf("9: 按书名对书籍进行排序\n");
+		printf("10: 退出\n");
+
+		int op; 
+		scanf("%d", &op);
+
+		if (op == 1) {
+			tot++;
+			printf("输入序号: ");
+			scanf("%s", book[tot].id);
+			printf("输入书名: ");
+			scanf("%s", book[tot].name);
+			printf("输入作者: ");
+			scanf("%s", book[tot].aut);
+			printf("输入出版社: ");
+			scanf("%s", book[tot].pos);
+			printf("输入类别: ");
+			scanf("%s", book[tot].typ);
+		}
+		if (op == 2) {
+			FILE* file;
+			file = fopen("info.txt", "w");
+			for ( i = 1; i <= tot; i++) {
+				fprintf(file, "%s\t%s\t%s\t%ss\t%s\n", book[i].id, book[i].name, book[i].aut, book[i].pos, book[i].typ);
+			}
+		}
+		if (op == 3) {
+			for ( i = 1; i <= tot; i++) {
+				show(&book[i]);
+			}
+		}
+		if (op == 4) {
+			int f = 0;
+			char id[30];
+			printf("要查找的书籍序号: "); scanf("%s", id);
+			for ( i = 1; i <= tot; i++) {
+				if (strcmp(book[i].id, id) == 0) {
+					f = 1;
+					show(&book[i]);
+				}
+			}
+			if (f) printf("没有该编号\n");
+		}
+		if (op == 5) {
+			node  x;
+			printf("输入序号: ");
+			scanf("%s", x.id);
+			printf("输入书名: ");
+			scanf("%s", x.name);
+			printf("输入作者: ");
+			scanf("%s", x.aut);
+			printf("输入出版社: ");
+			scanf("%s", x.pos);
+			printf("输入类别: ");
+			scanf("%s", x.typ);
+
+			if (add(x, tot)) {
+				fun(&book[++tot], &x);
+			}
+		}
+		if (op == 6) {
+			int f = 0;
+			char id[30];
+
+			printf("要删除的书籍序号: "); scanf("%s", id);
+			for ( i = 1; i <= tot; i++) {
+				if (strcmp(book[i].id, id) == 0) {
+					for ( j = i + 1; j <= tot; j++) {
+						fun(&book[j - 1], &book[j]);
+					}
+					tot--;
+					f = 1;
+					break;
+				}
+			}
+			if (!f) printf("没有该编号\n");
+
+		}
+		if (op == 7) {
+			int f = 0;
+			char id[30];
+			printf("要查找的书籍序号: "); scanf("%s", id);
+			for ( i = 1; i <= tot; i++) {
+				if (strcmp(book[i].id, id) == 0) {
+					f = 1;
+					printf("输入序号: ");
+					scanf("%s", book[i].id);
+					printf("输入书名: ");
+					scanf("%s", book[i].name);
+					printf("输入作者: ");
+					scanf("%s", book[i].aut);
+					printf("输入出版社: ");
+					scanf("%s", book[i].pos);
+					printf("输入类别: ");
+					scanf("%s", book[i].typ);
+				}
+			}
+			if (f) printf("没有该编号\n");
+		}
+		if (op == 8) {
+			int f = 0;
+			char id[30];
+			printf("要查找的书籍类别: "); scanf("%s", id);
+			for ( i = 1; i <= tot; i++) {
+				if (strcmp(book[i].typ, id) == 0) f++;
+			}
+			printf("该类别有%d本\n", f);
+		}
+		if (op == 9) {
+			node tt;
+			for ( i = 1; i <= tot; i++) {
+				for ( j = 1; j <= tot; j++) {
+					if (strcmp(book[i].name, book[j].name) < 0) {
+						strcpy(tt.id, book[i].id);
+						strcpy(tt.name, book[i].name);
+						strcpy(tt.aut, book[i].aut);
+						strcpy(tt.pos, book[i].pos);
+						strcpy(tt.typ, book[i].typ);
+						fun(&book[i], &book[j]);
+						fun(&book[j], &tt);
+					}
+				}
+			}
+		}
+		if (op == 10) { printf("欢迎下次使用\n"); break; }
+		system("pause");
+		system("cls");
+
+	}
+
+	return 0;
+}

@@ -1,0 +1,371 @@
+#include <string>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+class Employee 
+{
+public:
+	double salary;
+	string sex, name, data;
+	virtual void computeSalay() = 0;
+};
+
+class Worker : public Employee {
+public:
+	int day;
+	double gze;
+	void computeSalay() {
+		salary = gze * day;
+	}
+	Worker() {}
+	Worker(const Worker& x) {
+		day = x.day;
+		gze = x.gze;
+		salary = x.salary;
+
+		name = x.name;
+		sex = x.sex;
+		data = x.data;
+	}
+
+	bool operator <(const Worker& x) {
+		return salary < x.salary;
+	}
+	void add() {
+		printf("输入姓名: ");					cin >> name;
+		printf("输入性别: ");					cin >> sex;
+		printf("输入出生年月:  ");				cin >> data;
+		printf("输入该类工种的基本工资:  ");		cin >> gze;
+	}
+
+	void show() {
+		computeSalay();
+		printf("姓名: ");					cout << name << "\n";
+		printf("性别: ");					cout << sex << "\n";
+		printf("出生年月:  ");				cout << data << "\n";
+		printf("工资:  ");					cout << salary << "\n";
+	}
+};
+
+class Salesman :public Employee {
+public:
+	double xiaosho;
+	double basesalary;
+	double ticheng;
+
+	void computeSalay() {
+		salary = basesalary + xiaosho * ticheng;
+	}
+
+	Salesman() {}
+	Salesman(const Salesman& x) {
+		xiaosho = x.xiaosho;
+		basesalary = x.basesalary;
+		ticheng = x.ticheng;
+
+		salary = x.salary;
+
+		name = x.name;
+		sex = x.sex;
+		data = x.data;
+	}
+	bool operator <(const Salesman& x) {
+		return salary < x.salary;
+	}
+	void add() {
+		printf("输入姓名: ");					cin >> name;
+		printf("输入性别: ");					cin >> sex;
+		printf("输入出生年月:  ");				cin >> data;
+		printf("输入该类工种的提成:  ");			cin >> ticheng;
+		printf("输入该类工种的销售额:  ");		cin >> xiaosho;
+		printf("输入该类工种的基本工资:  ");		cin >> basesalary;
+	}
+
+	void show() {
+		computeSalay();
+		printf("姓名: ");					cout << name << "\n";
+		printf("性别: ");					cout << sex << "\n";
+		printf("出生年月:  ");				cout << data << "\n";
+		printf("工资:  ");					cout << salary << "\n";
+	}
+};
+
+class Mannager :public Employee {
+public:
+	double basesalary;
+	void computeSalay() {
+		salary = 30 * basesalary;
+	}
+	bool operator <(const Mannager& x) {
+		return salary < x.salary;
+	}
+	Mannager() {}
+	Mannager(const Mannager& x) {
+		basesalary = x.basesalary;
+		salary = x.salary;
+
+		name = x.name;
+		sex = x.sex;
+		data = x.data;
+	}
+
+	void add() {
+		printf("输入姓名: ");					cin >> name;
+		printf("输入性别: ");					cin >> sex;
+		printf("输入出生年月:  ");				cin >> data;
+		printf("输入该类工种的基本工资:  ");		cin >> basesalary;
+	}
+
+	void show() {
+		computeSalay();
+		printf("姓名: ");					cout << name << "\n";
+		printf("性别: ");					cout << sex << "\n";
+		printf("出生年月:  ");				cout << data << "\n";
+		printf("工资:  ");					cout << salary << "\n";
+	}
+};
+
+class Flaater :public Employee {
+public:
+	int hour;
+	double hoursalary;
+	void computeSalay() {
+		salary = hour * hoursalary;
+	}
+
+	bool operator <(const Flaater& x) {
+		return salary < x.salary;
+	}
+	Flaater() {}
+	Flaater(const Flaater& x) {
+		hour = x.hour;
+		hoursalary = x.hoursalary;
+
+		name = x.name;
+		sex = x.sex;
+		data = x.data;
+	}
+
+	void add() {
+		printf("输入姓名: ");					cin >> name;
+		printf("输入性别: ");					cin >> sex;
+		printf("输入出生年月:  ");				cin >> data;
+		printf("输入员工小时数:  ");				cin >> hour;
+		printf("输入该类工种的小时工资:  ");		cin >> hoursalary;
+	}
+
+	void show() {
+		computeSalay();
+		printf("姓名: ");					cout << name << "\n";
+		printf("性别: ");					cout << sex << "\n";
+		printf("出生年月:  ");				cout << data << "\n";
+		printf("工资:  ");					cout << salary << "\n";
+	}
+};
+
+const int N = 1000;
+
+int cnt_worker;
+int cnt_salesman;
+int cnt_mannager;
+int cnt_flaater;
+
+Worker worker[N];
+Salesman salesman[N];
+Mannager mannager[N];
+Flaater flaater[N];
+
+int main() 
+{
+	while (1) {
+		printf("0: 退出系统\n");
+		printf("1: 新增员工信息\n");
+		printf("2: 删除员工信息\n");
+		printf("3: 按姓名查找员工信息\n");
+		printf("4: 按类显示员工信息\n");
+		printf("5: 对员工信息按工资排序\n");
+
+		int op; cin >> op;
+
+		if (!op) {
+			cout << "欢迎下次使用\n";
+			break;
+		}
+		if (op == 1) {
+			printf("1: 增加经理\n"); 
+			printf("2: 增加临时工\n");
+			printf("3: 增加一般工人\n");
+			printf("4: 增加销售人员\n");
+			int choose; cin >> choose;
+			if (choose == 1) {
+				mannager[++cnt_mannager].add();
+			}
+			if (choose == 2) {
+				flaater[++cnt_flaater].add();
+			}
+			if (choose == 3) {
+				worker[++cnt_worker].add();
+			}
+			if (choose == 4) {
+				salesman[++cnt_salesman].add();
+			}
+		}
+		if (op == 2) {
+			printf("1: 删除经理\n");
+			printf("2: 删除临时工\n");
+			printf("3: 删除一般工人\n");
+			printf("4: 删除销售人员\n");
+			int flag = 0;
+			int choose; cin >> choose;
+			string name; printf("输入要删除的姓名: "); cin >> name;
+			if (choose == 1) {
+				for (int i = 1; i <= cnt_mannager; i++) {
+					if (mannager[i].name == name) {
+						flag = 1;
+						for (int j = i+1; j <= cnt_mannager; j++)
+							mannager[j-1] = mannager[j];
+						cnt_mannager--;
+					}
+				}
+				if (!flag) cout << "没有该员工信息\n";
+			}
+			if (choose == 2) {
+				for (int i = 1; i <= cnt_flaater; i++) {
+					if (flaater[i].name == name) {
+						flag = 1;
+						for (int j = i + 1; j <= cnt_flaater; j++)
+							flaater[j - 1] = flaater[j];
+						cnt_flaater--;
+					}
+				}
+				if (!flag) cout << "没有该员工信息\n";
+			}
+			if (choose == 3) {
+				for (int i = 1; i <= cnt_worker; i++) {
+					if (worker[i].name == name) {
+						flag = 1;
+						for (int j = i + 1; j <= cnt_worker; j++)
+							worker[j - 1] = worker[j];
+						cnt_worker--;
+					}
+				}
+				if (!flag) cout << "没有该员工信息\n";
+			}
+			if (choose == 4) {
+				for (int i = 1; i <= cnt_salesman; i++) {
+					if (salesman[i].name == name) {
+						flag = 1;
+						for (int j = i + 1; j <= cnt_salesman; j++)
+							salesman[j - 1] = salesman[j];
+						cnt_salesman--;
+					}
+				}
+				if (!flag) cout << "没有该员工信息\n";
+			}
+		}
+		if (op == 3) {
+			printf("1: 查找经理\n");
+			printf("2: 查找临时工\n");
+			printf("3: 查找一般工人\n");
+			printf("4: 查找销售人员\n");
+			int flag = 0;
+			int choose; cin >> choose;
+			string name; printf("输入要查找的姓名: "); cin >> name;
+
+			if(choose == 1){ 
+				for (int i = 1; i <= cnt_mannager; i++) {
+					if (mannager[i].name == name) {
+						mannager[i].show();
+						flag = 1;
+					}
+				}
+				if (!flag) cout << "没有该员工信息\n";
+			}
+			if(choose == 2){
+				for (int i = 1; i <= cnt_flaater; i++) {
+					if (flaater[i].name == name) {
+						flag = 1;
+						flaater[i].show();
+					}
+				}
+				if (!flag) cout << "没有该员工信息\n";
+			}
+			if(choose == 3){ 
+				for (int i = 1; i <= cnt_worker; i++) {
+					if (worker[i].name == name) {
+						flag = 1;
+						worker[i].show();
+					}
+				}
+				if (!flag) cout << "没有该员工信息\n";
+			}
+			if(choose == 4){ 
+				for (int i = 1; i <= cnt_salesman; i++) {
+					if (salesman[i].name == name) {
+						flag = 1;
+						salesman[i].show();
+					}
+				}
+				if (!flag) cout << "没有该员工信息\n";
+			}
+		}
+		if (op == 4) {
+			printf("1: 查找经理\n");
+			printf("2: 查找临时工\n");
+			printf("3: 查找一般工人\n");
+			printf("4: 查找销售人员\n");
+			int choose; cin >> choose;
+
+			if (choose == 1) {
+				for (int i = 1; i <= cnt_mannager; i++) {
+						mannager[i].show();
+				}
+				if (!cnt_mannager) cout << "没有员工信息\n";
+			}
+			if (choose == 2) {
+				for (int i = 1; i <= cnt_flaater; i++) {
+						flaater[i].show();
+				}
+				if (!cnt_flaater) cout << "没有员工信息\n";
+			}
+			if (choose == 3) {
+				for (int i = 1; i <= cnt_worker; i++) {
+						worker[i].show();
+				}
+				if (!cnt_worker) cout << "没有员工信息\n";
+			}
+			if (choose == 4) {
+				for (int i = 1; i <= cnt_salesman; i++) {
+						salesman[i].show();
+				}
+				if (!cnt_salesman) cout << "没有员工信息\n";
+			}
+		}
+		if (op == 5) {
+			printf("1: 对经理类排序\n");
+			printf("2: 对临时工排序\n");
+			printf("3: 对一般工人排序\n");
+			printf("4: 对销售人员排序\n");
+			int choose; cin >> choose;
+
+			if (choose == 1) {
+				sort(mannager + 1, mannager + 1 + cnt_mannager);
+			}
+			if (choose == 2) {
+				sort(flaater + 1, flaater + 1 + cnt_flaater);
+			}
+			if (choose == 3) {
+				sort(worker + 1, worker + 1 + cnt_worker);
+			}
+			if (choose == 4) {
+				sort(salesman + 1, salesman + 1 + cnt_salesman);
+			}
+		}
+		system("pause");
+		system("cls");
+	}
+
+
+	return 0;
+}

@@ -1,0 +1,160 @@
+#include <string>
+#include <queue>
+#include <iostream>
+#include <algorithm>
+#include <graphics.h>
+#include <Windows.h>
+
+using namespace std;
+
+string s;
+struct node {
+	int x, y;
+	char data;
+	node* l, * r;
+};
+
+int f = 0;
+int tot = 0;
+char outt[100];
+
+void pre(node* now);
+void in(node* now);
+void lat(node* now);
+void flo(node* now);
+
+void show(node* root, void(*f)(node*));
+
+void drew(node* now, int x, int y, int mode);
+void build(node*& now, int x, int y, int dept, int ddd);
+
+// AB..C..
+
+int main()
+{
+	initgraph(1400, 800, EW_SHOWCONSOLE);
+	setbkcolor(0xDAA520);
+	cleardevice();
+
+	cin >> s;
+	node* root = NULL;
+	outtextxy(20, 10, "开始构图");
+	build(root, 700, 200, 0, 200);
+	drew(root, 0, 0, 1);
+	outtextxy(20, 10, "                    ");
+
+	while (1)
+	{
+		outtextxy(20, 10, "0: 退出");
+		outtextxy(20, 30, "1: 前序遍历");
+		outtextxy(20, 50, "2: 中序遍历");
+		outtextxy(20, 70, "3: 后序遍历");
+		outtextxy(20, 90, "4: 层序遍历");
+		int op; cin >> op;
+		if (!op) break;
+		if (op == 1) show(root, pre);
+		if (op == 2) show(root, in);
+		if (op == 3) show(root, lat);
+		if (op == 4) show(root, flo);
+		drew(root, 700, 200, 0);
+	}
+
+	closegraph();
+	return 0;
+}
+
+void build(node*& now, int x, int y, int dept, int ddd)
+{
+
+	if (s[tot] == '.') {
+		tot++;
+		return;
+	}
+
+	if (now == NULL) {
+		now = (node*)malloc(sizeof(node));
+		now->x = x; now->y = y;
+		now->data = s[tot++];
+		now->l = NULL; now->r = NULL;
+	}
+
+	build(now->l, x - ddd, y + 50, dept + 1, ddd / 2);
+	build(now->r, x + ddd, y + 50, dept + 1, ddd / 2);
+}
+
+void drew(node* now, int x, int y, int mode)
+{
+
+	if (now != NULL)
+	{
+		if (f == 0) { // first node 
+			setfillcolor(0xDB7093);
+			solidcircle(now->x, now->y, 20);
+			f = 1;
+		}
+		else {
+			setfillcolor(0xFF6347);
+			line(x, y, now->x, now->y);
+
+			setfillcolor(0xDB7093);
+			solidcircle(now->x, now->y, 20);
+		}
+		if (mode)Sleep(1000);
+
+		drew(now->l, now->x, now->y, mode);
+		drew(now->r, now->x, now->y, mode);
+	}
+
+}
+
+void pre(node* now)
+{
+	if (now == NULL) return;
+	setfillcolor(RED);
+	solidcircle(now->x, now->y, 10);
+	Sleep(1000);
+	pre(now->l);
+	pre(now->r);
+}
+
+void in(node* now)
+{
+	if (now == NULL) return;
+	in(now->l);
+	setfillcolor(RED);
+	solidcircle(now->x, now->y, 10);
+	Sleep(1000);
+	in(now->r);
+}
+
+void lat(node* now)
+{
+	if (now == NULL) return;
+	lat(now->l);
+	lat(now->r);
+	setfillcolor(RED);
+	solidcircle(now->x, now->y, 10);
+	Sleep(1000);
+
+}
+
+void flo(node* now)
+{
+	queue<node*>q;
+	if (now) q.push(now);
+	while (!q.empty())
+	{
+		node* th = q.front();
+		setfillcolor(RED);
+		solidcircle(th->x, th->y, 10);
+		Sleep(1000);
+		if (th->l) q.push(th->l);
+		if (th->r) q.push(th->r);
+		q.pop();
+	}
+}
+
+void show(node* root, void(*f)(node*)) {
+	f(root);
+}
+

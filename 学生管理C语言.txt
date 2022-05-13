@@ -1,0 +1,187 @@
+#include <stdio.h>
+#include <string.h>
+
+struct Book {
+	int id;
+	char name[50];
+	int tyid;
+	int price;
+}a[100005];
+
+int tot;
+int visid[1000005];
+FILE* file;
+
+void table() 
+{
+	printf("0: 退出程序\n");
+	printf("1: 从键盘读入数据并保存\n");
+	printf("2: 从文件读入数据并显示\n");
+	printf("3: 从文件通过编号查找图书信息\n");
+	printf("4: 从文件通过书名查找图书信息\n");
+	printf("5: 从文件通过类别编号查找图书信息\n");
+	printf("6: 添加信息并写入文件\n");
+	printf("7: 按类别计算总价和平均价\n");
+	printf("8: 找价格最高的图书并显示\n");
+	printf("9: 找价格最高的图书并显示\n");
+}
+
+int main() 
+{
+	while (1) {
+		table();
+
+		int op; scanf("%d", &op);
+		if (op == 0) { break; }
+		if (op == 1) {
+			printf("请输入书名："); scanf("%s", a[++tot].name);
+			printf("请输入价格："); scanf("%d", &a[tot].price);
+			printf("请输入书籍编号："); scanf("%d", &a[tot].id);
+			printf("请输入类别编号："); scanf("%d", &a[tot].tyid);
+			file = fopen("bookinfo.txt", "a");
+			fprintf(file, "%s\t%d\t%d\t%d\n", a[tot].name, a[tot].price, a[tot].id, a[tot].tyid);
+			visid[a[tot].tyid] = 1;
+			fclose(file);
+		}
+		if (op == 2) {
+			if (tot){
+				file = fopen("bookinfo.txt", "r");
+				struct Book s;
+				while (!feof(file)) {
+					fscanf(file, "%s%d%d%d", s.name, &s.price, &s.id, &s.tyid);
+					printf("%s\t%d\t%d\t%d\n", s.name, s.price, s.id, s.tyid);
+					if (!feof(file))break;
+				}
+				fclose(file);
+			}
+			else { printf("没有图书信息"); }
+		}
+		if (op == 3) {
+			printf("请输入要查询书籍编号：");
+			int id; scanf("%d", &id);
+			file = fopen("bookinfo.txt", "r");
+			int f = 0;
+			while (!feof(file)) {
+				struct Book s;
+				fscanf(file, "%s%d%d%d", s.name, &s.price, &s.id, &s.tyid);
+				if (s.id == id) {
+					printf("%s\t%d\t%d\t%d\n", s.name, s.price, s.id, s.tyid);
+					f = 1;
+					break;
+				}
+				if (!feof(file))break;
+			}
+			fclose(file);
+			if (!f) { printf("没有图书信息"); }
+		}
+		if (op == 4) {
+			printf("请输入要查询书籍名：");
+			char id[30]; scanf("%s", id);
+
+			file = fopen("bookinfo.txt", "r");
+			int f = 0;
+			while (!feof(file)) {
+				struct Book s;
+				fscanf(file, "%s%d%d%d", s.name, &s.price, &s.id, &s.tyid);
+				if (strcmp(s.name, id) == 0) {
+					printf("%s\t%d\t%d\t%d\n", s.name, s.price, s.id, s.tyid);
+					f = 1;
+					break;
+				}
+				if (!feof(file))break;
+			}
+			fclose(file);
+			if (!f) { printf("没有图书信息"); }
+		}
+		if (op == 5) {
+			printf("请输入要查询书籍类别编号：");
+			int id; scanf("%d", &id);
+			file = fopen("bookinfo.txt", "r");
+			int f = 0;
+			while (!feof(file)) {
+				struct Book s;
+				fscanf(file, "%s%d%d%d", s.name, &s.price, &s.id, &s.tyid);
+				if (s.tyid == id) {
+					printf("%s\t%d\t%d\t%d\n", s.name, s.price, s.id, s.tyid);
+					f = 1;
+				}
+				if (!feof(file))break;
+			}
+			fclose(file);
+			if (!f) { printf("没有图书信息"); }
+		}
+		if (op == 6) {
+			printf("请输入书名："); scanf("%s", a[++tot].name);
+			printf("请输入价格："); scanf("%d", a[tot].price);
+			printf("请输入书籍编号："); scanf("%d", a[tot].id);
+			printf("请输入类别编号："); scanf("%d", a[tot].tyid);
+			file = fopen("bookinfo.txt", "a");
+			fprintf(file, "%s\t%d\t%d\t%d\n", a[tot].name, a[tot].price, a[tot].id, a[tot].tyid);
+			fclose(file);
+		}
+		if (op == 7) {
+			printf("请输入要计算的书籍类别编号：");
+			int id; scanf("%d", &id);
+			file = fopen("bookinfo.txt", "r");
+			int f = 0;
+			int cnt = 0;
+			while (!feof(file)) {
+				struct Book s;
+				fscanf(file, "%s%d%d%d", s.name, &s.price, &s.id, &s.tyid);
+				if (s.tyid == id) {
+					cnt++;
+					f += s.price;
+				}
+				if (!feof(file))break;
+			}
+			fclose(file);
+			if (!f) { printf("没有图书信息"); }
+			else {
+				printf("%d %d %lf\n", id, f, f * 1.0 / cnt);
+			}
+		}
+		if (op == 8) {
+			struct Book ma; ma.price = 0;
+			file = fopen("bookinfo.txt", "r");
+			int f = 0;
+			while (!feof(file)) {
+				struct Book s;
+				fscanf(file, "%s%d%d%d", s.name, &s.price, &s.id, &s.tyid);
+				if (s.price > ma.price) {
+					strcpy(ma.name, s.name);
+					ma.price = s.price;
+					ma.id = s.id;
+					ma.tyid = s.tyid;
+				}
+				if (!feof(file))break;
+			}
+			fclose(file);
+			printf("%s\t%d\t%d\t%d\n", ma.name, ma.price, ma.id, ma.tyid);
+		}
+		if (op == 9) {
+			for (int i = 0; i < 1e6; i++) {
+				if (visid[i]) {
+					struct Book ma; ma.price = 0;
+					file = fopen("bookinfo.txt", "r");
+					while (!feof(file)) {
+						struct Book s;
+						fscanf(file, "%s%d%d%d", s.name, &s.price, &s.id, &s.tyid);
+						if (s.price > ma.price) {
+							strcpy(ma.name, s.name);
+							ma.price = s.price;
+							ma.id = s.id;
+							ma.tyid = s.tyid;
+						}
+						if (!feof(file))break;
+					}
+					fclose(file);
+					printf("%s\t%d\t%d\t%d\n", ma.name, ma.price, ma.id, ma.tyid);
+				}
+			}
+		}
+
+		system("pause");
+		system("cls");
+	}
+	return 0;
+}

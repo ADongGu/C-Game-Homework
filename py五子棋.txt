@@ -1,0 +1,170 @@
+import random
+
+# 定义棋盘大小
+BOARD_SIZE = 15
+
+# 定义一个二维列表来充当棋盘
+board = []
+
+def show():
+    print("{0:-^30}".format("欢迎来到五子棋游戏系统"))
+
+
+def initBoard():
+    # 为每个元素赋值“✚”，用于在控制台画出棋盘
+    global row
+    for i in range(BOARD_SIZE):
+        row = ["✚"] * BOARD_SIZE
+        board.append(row)
+    # 控制台输出棋盘的方法
+
+
+def printBoard():
+    for i in range(BOARD_SIZE):
+        for j in range(BOARD_SIZE):
+            print(board[i][j], end="")
+        print()
+
+show()
+
+initBoard()
+
+printBoard()
+
+inputstr = input("请输入您下棋的坐标，应以x,y的格式：\n")
+f = input("0: 悔棋   1: 继续  ")
+while (f == '0') :
+    inputstr = input("请输入您下棋的坐标，应以x,y的格式：\n")
+    f = input("0: 悔棋   1: 继续  ")
+
+
+flag = False
+
+while inputstr != None:
+    x_str, y_str = inputstr.split(sep=",")
+    # 为对应的列表赋值"●"
+    board[int(y_str)][int(x_str)] = "●"
+    '''电脑随机生成2个整数，作为电脑的坐标，用"○"代替
+    1.坐标的有效性，只能是数字，不能超出棋盘范围
+
+    2.下棋的点不能重复下棋
+
+    3.每次下棋后需要扫描谁赢了'''
+    i = int(y_str)
+    j = int(x_str)
+
+    for x in range(j - 4, j + 5):
+        if x >= 0 and x + 4 < 15:  # 横向有没有出现5连（在边缘依次逐一遍历，是否五个棋子的类型一样）
+            if board[i][x] == "●" and \
+                    board[i][x + 1] == "●" and \
+                    board[i][x + 2] == "●" and \
+                    board[i][x + 3] == "●" and \
+                    board[i][x + 4] == "●":
+                flag = True
+                break
+
+    for x in range(i - 4, i + 5):
+        if x >= 0 and x + 4 < 15:  # 纵向有没有出现5连（在边缘依次逐一遍历，是否五个棋子的类型一样）
+            if board[x][j] == "●" and \
+                    board[x + 1][j] == "●" and \
+                    board[x + 2][j] == "●" and \
+                    board[x + 3][j] == "●" and \
+                    board[x + 4][j] == "●":
+                flag = True
+                break
+
+    '''先判断东北方向的对角下输赢 x 列轴，y是行轴 ，
+    i是行 j是列（右斜向）（在边缘依次逐一遍历，是否五个棋子的类型一样）'''
+    for x, y in zip(range(j + 4, j - 5, -1), range(i - 4, i + 5)):
+        if x >= 0 and x + 4 < 15 and y + 4 >= 0 and y < 15:
+            if board[y][x] == "●" and \
+                    board[y - 1][x + 1] == "●" and \
+                    board[y - 2][x + 2] == "●" and \
+                    board[y - 3][x + 3] == "●" and \
+                    board[y - 4][x + 4] == "●":
+                flag = True
+                break
+
+    '''先判断西北方向的对角下输赢 x 列轴，y是行轴 ，
+    i是行 j是列（左斜向）（在边缘依次逐一遍历，是否五个棋子的类型一样）'''
+    for x, y in zip(range(j - 4, j + 5), range(i - 4, i + 5)):
+        if x >= 0 and x + 4 < 15 and y >= 0 and y + 4 < 15:
+            if board[y][x] == "●" and \
+                    board[y + 1][x + 1] == "●" and \
+                    board[y + 2][x + 2] == "●" and \
+                    board[y + 3][x + 3] == "●" and \
+                    board[y + 4][x + 4] == "●":
+                flag = True
+                break
+
+    if flag:
+        printBoard()
+        print("恭喜你，你赢了！")
+        break
+
+    from random import randint
+
+    x_str1 = random.randint(0, 14)
+    y_str1 = random.randint(0, 14)
+    while board[int(y_str1)][int(x_str1)] == "●" or board[int(y_str1)][int(x_str1)] == "○":
+        x_str1 = random.randint(0, 14)
+        y_str1 = random.randint(0, 14)
+
+    board[int(y_str1)][int(x_str1)] = "○"
+    printBoard()
+
+    i = int(y_str1)
+    j = int(x_str1)
+
+    for x in range(j - 4, j + 5):
+        if x >= 0 and x + 4 < 15:  # 横向有没有出现5连（在边缘依次逐一遍历，是否五个棋子的类型一样）
+            if board[i][x] == "○" and \
+                    board[i][x + 1] == "○" and \
+                    board[i][x + 2] == "○" and \
+                    board[i][x + 3] == "○" and \
+                    board[i][x + 4] == "○":
+                flag = True
+                break
+
+    for x in range(i - 4, i + 5):
+        if x >= 0 and x + 4 < 15:  # 纵向有没有出现5连（在边缘依次逐一遍历，是否五个棋子的类型一样）
+            if board[x][j] == "○" and \
+                    board[x + 1][j] == "○" and \
+                    board[x + 2][j] == "○" and \
+                    board[x + 3][j] == "○" and \
+                    board[x + 4][j] == "○":
+                flag = True
+                break
+
+    '''先判断东北方向的对角下输赢 x 列轴，y是行轴 ，
+    i是行 j是列（右斜向）（在边缘依次逐一遍历，是否五个棋子的类型一样）'''
+    for x, y in zip(range(j + 4, j - 5, -1), range(i - 4, i + 5)):
+        if x >= 0 and x + 4 < 15 and y + 4 >= 0 and y < 15:
+            if board[y][x] == "○" and \
+                    board[y - 1][x + 1] == "○" and \
+                    board[y - 2][x + 2] == "○" and \
+                    board[y - 3][x + 3] == "○" and \
+                    board[y - 4][x + 4] == "○":
+                flag = True
+                break
+
+    '''先判断西北方向的对角下输赢 x 列轴，y是行轴 ，
+    i是行 j是列（左斜向）（在边缘依次逐一遍历，是否五个棋子的类型一样）'''
+    for x, y in zip(range(j - 4, j + 5), range(i - 4, i + 5)):
+        if x >= 0 and x + 4 < 15 and y >= 0 and y + 4 < 15:
+            if board[y][x] == "○" and \
+                    board[y + 1][x + 1] == "○" and \
+                    board[y + 2][x + 2] == "○" and \
+                    board[y + 3][x + 3] == "○" and \
+                    board[y + 4][x + 4] == "○":
+                flag = True
+                break
+
+    if flag:
+        print("对不起，你输了！")
+        break
+    inputstr = input("请输入您下棋的坐标，应以x,y的格式：\n")
+    f = input("0: 悔棋   1: 继续  ")
+    while (f == '0'):
+        inputstr = input("请输入您下棋的坐标，应以x,y的格式：\n")
+        f = input("0: 悔棋   1: 继续  ")

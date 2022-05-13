@@ -1,0 +1,139 @@
+#include <graphics.h>
+#include <Windows.h>
+#include <iostream>
+#include <algorithm>
+#include <string>
+#include <fstream>
+using namespace std;
+
+const int N = 1e5 + 10;
+
+int vis[30];
+int fa[30];
+int nPoint;
+int nEdge;
+string s;
+
+struct Edge {
+	int u, v;
+	int w;
+	int flag = 0;
+
+	bool operator < (Edge& x) {
+		return w < x.w;
+	}
+}edge[N >> 1];
+
+struct Point {
+	int x, y;
+}point[30];
+
+void drew();
+void drewline(int x1, int y1, int x2, int y2, int op, int w);
+void drewnode(int u, int op);
+int find(int u);
+void krusal();
+
+int main()
+{
+
+	initgraph(640, 480);
+	setbkcolor(BLUE);
+	setorigin(100, 100);
+	fstream File("888.txt", ios::in);
+
+	File >> nPoint >> s;
+	for (int i = 0; i < nPoint; i++)
+	{
+		File >> point[s[i] - 'A'].x >> point[s[i] - 'A'].y;
+	}
+
+	File >> nEdge;
+	for (int i = 0; i < nEdge; i++)
+	{
+		File >> edge[i].u >> edge[i].v >> edge[i].w;
+	}
+
+	krusal();
+
+	return 0;
+}
+
+int find(int u)
+{
+	return (fa[u] == u ? u : fa[u] = find(fa[u]));
+}
+
+void drewline(int x1, int y1, int x2, int y2, int op, int w)
+{
+	char output[100] = "";
+	setlinestyle(3);
+	if (op) {
+		setlinecolor(RED);
+		line(x1, y1, x2, y2);
+		sprintf(output, "%d", w);
+		outtextxy((x1 + x2) / 2, (y1 + y2) / 2, output);
+	}
+	else {
+		setlinecolor(GREEN);
+		line(x1, y1, x2, y2);
+		sprintf(output, "%d", w);
+		outtextxy((x1 + x2) / 2, (y1 + y2) / 2, output);
+	}
+}
+void drewnode(int u, int op) {
+	if (op) {
+		vis[u] = 1;
+		setfillcolor(0xFFB6C1);
+		fillcircle(point[u].x, point[u].y, 20);
+		outtextxy(point[u].x, point[u].y, u + 'A');
+	}
+	else {
+		setfillcolor(0x8A2BE2);
+		fillcircle(point[u].x, point[u].y, 10);
+		outtextxy(point[u].x, point[u].y, u + 'A');
+	}
+
+}
+
+void drew()
+{
+	for (int i = 0; i < nEdge; i++)
+	{
+
+		int u = edge[i].u;
+		int v = edge[i].v;
+		if (edge[i].flag)
+		{
+			drewline(point[u].x, point[u].y, point[v].x, point[v].y, 1, edge[i].w);
+			drewnode(u, 1);
+			drewnode(v, 1);
+		}
+		else
+		{
+			drewline(point[u].x, point[u].y, point[v].x, point[v].y, 0, edge[i].w);
+			if (!vis[u]) drewnode(u, 0);
+			if (!vis[v]) drewnode(v, 0);
+		}
+	}
+}
+
+void krusal()
+{
+	for (int i = 0; i < 26; i++)
+		fa[i] = i;
+
+	sort(edge, edge + nEdge);
+	for (int i = 0; i < nEdge; i++)
+	{
+		int u = find(edge[i].u);
+		int v = find(edge[i].v);
+		if (u != v)
+		{
+			fa[v] = u;
+			edge[i].flag = 1;
+		}
+		drew();
+		Sleep(2000);
+	}
+}

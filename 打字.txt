@@ -1,0 +1,166 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
+#include<Windows.h>
+#include <graphics.h>
+#include<conio.h>
+
+void print_lie(int x)//打印列（光标位置）
+{
+	for (int i = 0; i < x; i++)
+		printf(" ");
+}
+
+void print_hang(int y)
+{
+	for (int i = 0; i < y; i++)
+		printf("\n");
+}
+
+void show()
+{
+	print_hang(10);
+	print_lie(30);
+	printf("按 任 意 键 开 始 游 戏··················");
+}
+
+void menu(int score, int mistake)
+{
+	print_lie(10);
+	printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+	print_lie(10);
+	printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$              score = %d                $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n", score);
+	print_lie(10);
+	printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$              mistake = %d              $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n", mistake);
+	print_lie(10);
+	printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+}
+
+void choose(int& choice)
+{
+	printf("                   ---------------   请选择挑战速度：1---慢     2---缓       3---快    --------------------             \n");
+	int flag = 0;
+
+	do {
+		if (flag > 0)
+			printf("输入有误，重新输入\n");
+		flag++;
+		scanf("%d", &choice);
+	} while (0 > choice || choice > 3);
+
+	printf("                                         -----------游戏开始咯----------                   ");
+	Sleep(200);
+}
+
+void showpaint(int x)//特效
+{
+	print_lie(x);
+	printf("         +         +\n");
+
+	print_lie(x);
+	printf("       +++++++  ++++++\n");
+
+	print_lie(x);
+	printf("    +++++++++++++++++++++\n");
+
+	print_lie(x);
+	printf("     ++++++++++++++++++\n");
+
+	print_lie(x);
+	printf("       ++++++++++++++\n");
+
+	print_lie(x);
+	printf("          ++++++++\n");
+
+	print_lie(x);
+	printf("              +\n");
+}
+
+int main()
+{
+	int score = 0, mistake = 0, i;
+	char word;
+	int x;//任一列
+	int flag = 1;//是否继续游戏
+	int limit = 20;//限制掉落高度
+	int choice = -1;//挑战难度
+	int num; //任一字母
+
+	show();
+	getchar();
+	system("cls");
+	menu(score, mistake);
+	choose(choice);
+
+	do {
+		system("cls");
+		menu(score, mistake);//更新
+		char c = 'A';
+		x = rand() % 80;
+		num = rand() % 26;
+		c = c + num;
+		for (i = 0; i <= limit; i++) {
+			print_lie(x);
+			printf("%c", c);
+			if (choice == 1)
+				Sleep(300);//等待 函数
+			if (choice == 2)
+				Sleep(200);
+			if (choice == 3)
+				Sleep(100);
+			printf("\b \n");//把单词以空格代替并换行
+			if (kbhit()) {//看是否有输入的函数
+				word = getch();
+				if (word == c) {
+					score += 10;
+					print_lie(x);
+					printf("真不错！\n");
+					showpaint(x);
+					Sleep(100);
+					break;
+				}
+				else {
+					print_lie(x);
+					printf("加油~继续努力\n");
+					showpaint(x);
+					Sleep(100);
+					mistake += 10;
+					break;
+				}
+			}
+		}
+
+		if (i > limit)//超出输入时间
+			mistake += 10;
+
+		if (score >= 300) {
+			system("cls");
+			printf("\n\n\n\n\n\n\n       YOU         WIN              !!!!\n");
+			printf("     还想再来一把？   任意键--开始     0--结束");
+			scanf("%d", &flag);
+			if (flag != 0)
+				choose(choice);
+			score = 0;
+			mistake = 0;
+		}
+
+		if (mistake >= 100)
+		{
+			system("cls");
+			printf("\n\n\n\n\n\n\n        YOU         LOSE            ~~~~~\n");
+			printf("     还想再来一把？   任意键 -- 开始       0 -- 结束");
+			scanf("%d", &flag);
+			if (flag != 0)
+				choose(choice);
+			score = 0;
+			mistake = 0;
+		}
+
+	} while (flag != 0);
+
+	system("cls");
+	print_hang(10);
+	print_lie(30);
+	printf("  ByeBye~~~~~");
+	return 0;
+};

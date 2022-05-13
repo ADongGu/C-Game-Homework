@@ -1,0 +1,192 @@
+#include <string>
+#include <fstream>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+class Score {
+public:
+	int sco;
+	string id;
+	string cname;
+};
+
+class Course {
+public:
+	int cscore;
+	string cid, cname, part;
+};
+
+class Student {
+public:
+	int sum = 0;
+	int cou = 0;
+	int sex;
+	string id, name, date, classroom;
+	Student() {}
+	Student(const Student& x) {
+		sum = x.sum;
+		cou = x.cou;
+		sex = x.sex;
+		id = x.id;
+		name = x.name;
+		date = x.date;
+		classroom = x.classroom;
+	}
+	void add() {
+		printf("id 号: ");			cin >> id;
+		printf("姓名: ");			cin >> name;
+		printf("出生日期: ");		cin >> date;
+		printf("班级号: ");			cin >> classroom;
+		printf("性别 ");				cin >> sex;
+	}
+	void change() {
+		printf("id 号: ");			cin >> id;
+		printf("姓名: ");			cin >> name;
+		printf("出生日期: ");		cin >> date;
+		printf("班级号: ");			cin >> classroom;
+		printf("性别 ");				cin >> sex;
+	}
+	void show() {
+		cout << "----------------------------------------------------------\n";
+		printf("id 号: ");			cout << id << "\n";
+		printf("姓名: ");			cout << name << "\n";
+		printf("出生日期: ");		cout << date << "\n";
+		printf("班级号: ");			cout << classroom << "\n";
+		printf("性别 ");				cout << sex << "\n";
+	}
+};
+
+Score score[100];
+Student stu[1000];
+Course course[100];
+
+
+int cmp(Student x, Student y) {
+	return x.sum > y.sum;
+}
+int main()
+{
+	int num_stu = 0;
+	int num_sco = 0;
+	int num_cou = 0;
+
+	fstream file("stu.txt", ios::in);
+	while (!file.eof()) {
+		file >> stu[++num_stu].id >> stu[num_stu].name >> stu[num_stu].sex >> stu[num_stu].date >> stu[num_stu].classroom;
+	}
+	file.close();
+
+	file.open("sco.txt", ios::in);
+	while (!file.eof()) {
+		file >> score[++num_sco].id >> score[num_sco].cname >> score[num_sco].sco;
+	}
+	file.close();
+
+	file.open("cou.txt", ios::in);
+	while (!file.eof()) {
+		file >> course[++num_cou].cid >> course[num_cou].cname >> course[num_cou].cscore >> course[num_cou].part;
+	}
+	file.close();
+
+	while (1) 
+	{
+		printf("1: 添加学生信息\n");
+		printf("2: 修改学生信息\n");
+		printf("3: 删除学生信息\n");
+		printf("4: 按学号查找学生\n");
+		printf("5: 按姓名查找学生\n");
+		printf("6: 学生的平均分\n");
+		printf("7: 学生的排名\n");
+
+		int op; cin >> op;
+		if (op == 1) {
+			stu[++num_stu].add();
+		}
+		if (op == 2) {
+			printf("输入要修改学生id号   ");
+			int flag = 0;
+			string x; cin >> x;
+			for (int i = 1; i <= num_stu; i++) {
+				if (x == stu[i].id) {
+					stu[i].change();
+					flag = 1;
+				}
+			}
+			if (!flag) cout << "没有这个学生\n";
+		}
+		if (op == 3) {
+			printf("输入要删除学生id号   ");
+			int flag = 0;
+			string x; cin >> x;
+			for (int i = 1; i <= num_stu; i++) {
+				if (x == stu[i].id) {
+					flag = 1;
+					for (int j = i + 1; j <= num_stu; j++) {
+						stu[j - 1] = stu[j];
+					}
+				}
+			}
+			if (!flag) cout << "没有这个学生\n";
+		}
+		if (op == 4) {
+			printf("输入要查找的学生id号   ");
+			int flag = 0;
+			string x; cin >> x;
+			for (int i = 1; i <= num_stu; i++) {
+				if (x == stu[i].id) {
+					stu[i].show();
+					flag = 1;
+				}
+			}
+			if (!flag) cout << "没有这个学生\n";
+		}
+		if (op == 5) {
+			printf("输入要查找的学生姓名   ");
+			int flag = 0;
+			string x; cin >> x;
+			for (int i = 1; i <= num_stu; i++) {
+				if (x == stu[i].id) {
+					stu[i].show();
+					flag = 1;
+				}
+			}
+			if (!flag) cout << "没有这个学生\n";
+		}
+		if (op == 6) {
+			for (int i = 1; i <= num_sco; i++)
+			{
+				for (int j = 1; j <= num_cou; j++)
+				{
+					if (score[i].cname == course[j].cid) {
+						for (int z = 1; z <= num_stu; z++) {
+							if (stu[z].id == score[j].id) {
+								stu[z].cou++;	
+								stu[z].sum += score[j].sco;
+							}
+						}
+					}
+				}
+			}
+
+			for (int i = 1; i <= num_stu; i++) {
+				stu[i].show();
+				cout << "平均分为: ";//
+				if (stu[i].sum == 0 || stu[i].cou == 0) cout << "0\n";
+				else cout << (stu[i].sum * 1.0 / stu[i].cou) << "\n";
+			}
+		}
+		if (op == 7) {
+			sort(stu + 1, stu + 1 + num_stu, cmp);
+			for (int i = 1; i <= num_stu; i++) {
+				stu[i].show();
+				cout << "平均分为: ";//
+				if (stu[i].sum == 0 || stu[i].cou == 0) cout << "0\n";
+				else cout << (stu[i].sum * 1.0 / stu[i].cou) << "\n";
+			}
+		}
+		system("pause");
+		system("cls");
+	}
+	return 0;
+}

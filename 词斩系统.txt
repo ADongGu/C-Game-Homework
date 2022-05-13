@@ -1,0 +1,476 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
+#include<string.h>
+
+// 单词
+struct Word {
+	int know_cnt;		// 已背次数
+	int pass_flag;		// 是否被斩 0: 没有，  1： 已斩
+	char eng_word[50];	// 英文单词
+	char chi_word[50];	// 中文意思
+};
+// 三大词库 雅思，托福，GRE
+struct YASI{
+	struct Word word;
+}YaSi[50050];
+struct TUOFU {
+	struct Word word;
+}TuoFu[50050];
+struct GRE {
+	struct Word word;
+}Gre[50050];
+// 三大词库的单词个数
+int YaSi_cnt, TuoFu_cnt, Gre_cnt;
+
+void show_line() {
+	printf("--------------------------------------\n");
+}
+
+void Where() {
+	printf("请输入要操作的词库：\n");
+	printf("1: 托福词汇\n");
+	printf("2：雅思词汇\n");
+	printf("3：GRE词汇\n");
+}
+void table() {
+	show_line();
+	printf("欢迎来到背词系统~~\n");
+	printf("0：退出系统\n");
+	printf("1：添加词库单词\n");
+	printf("2：显示词库单词\n");
+	printf("3：查询词库单词\n");
+	printf("4：背单词\n");
+	printf("5：查询已斩单词\n");
+	printf("6：查询未斩单词\n");
+	printf("7：查询未背诵单词\n");
+	show_line();
+}
+void add(int where) {
+	show_line();
+	if (where == 1) {
+		YaSi_cnt++;
+		printf("输入英文单词: "); scanf("%s", YaSi[YaSi_cnt].word.eng_word);
+		printf("输入中文意思: "); scanf("%s", YaSi[YaSi_cnt].word.chi_word);
+		YaSi[YaSi_cnt].word.know_cnt = YaSi[YaSi_cnt].word.pass_flag = 0;
+
+		for (int i = 1; i < YaSi_cnt; i++) {
+			if (strcmp(YaSi[YaSi_cnt].word.eng_word, YaSi[i].word.eng_word) == 0) {
+				printf("单词已有， 添加失败\n");
+				YaSi_cnt--;
+				show_line();
+				return;
+			}
+		}
+	}
+	if (where == 2) {
+		TuoFu_cnt++;
+		printf("输入英文单词: "); scanf("%s", TuoFu[TuoFu_cnt].word.eng_word);
+		printf("输入中文意思: "); scanf("%s", TuoFu[TuoFu_cnt].word.chi_word);
+		TuoFu[TuoFu_cnt].word.know_cnt = TuoFu[TuoFu_cnt].word.pass_flag = 0;
+
+		for (int i = 1; i < TuoFu_cnt; i++) {
+			if (strcmp(TuoFu[TuoFu_cnt].word.eng_word, TuoFu[i].word.eng_word) == 0) {
+				printf("单词已有， 添加失败\n");
+				TuoFu_cnt--;
+				show_line();
+				return;
+			}
+		}
+	}
+	if (where == 3) {
+		Gre_cnt++;
+		printf("输入英文单词: "); scanf("%s", Gre[Gre_cnt].word.eng_word);
+		printf("输入中文意思: "); scanf("%s", Gre[Gre_cnt].word.chi_word);
+		Gre[Gre_cnt].word.know_cnt = Gre[Gre_cnt].word.pass_flag = 0;
+
+		for (int i = 1; i < Gre_cnt; i++) {
+			if (strcmp(Gre[Gre_cnt].word.eng_word, Gre[i].word.eng_word) == 0) {
+				printf("单词已有， 添加失败\n");
+				TuoFu_cnt--;
+				show_line();
+				return;
+			}
+		}
+	}
+	printf("添加单词成功\n");
+	show_line();
+
+}
+void show_all(int where) {
+	show_line();
+	if (where == 1) {
+		for (int i = 1; i <= YaSi_cnt; i++) {
+			show_line();
+			printf("英文单词：%s\n", YaSi[i].word.eng_word);
+			printf("中文意思：%s\n", YaSi[i].word.chi_word);
+			printf("已背次数：%d\n", YaSi[i].word.know_cnt);
+			printf("是否被斩："); 
+			if (YaSi[i].word.pass_flag) printf("是\n");
+			else printf("否\n");
+			show_line();
+		}
+	}
+	if (where == 2) {
+		for (int i = 1; i <= TuoFu_cnt; i++) {
+			show_line();
+			printf("英文单词：%s\n", TuoFu[i].word.eng_word);
+			printf("中文意思：%s\n", TuoFu[i].word.chi_word);
+			printf("已背次数：%d\n", TuoFu[i].word.know_cnt);
+			printf("是否被斩：");
+			if (TuoFu[i].word.pass_flag) printf("是\n");
+			else printf("否\n");
+			show_line();
+		}
+	}
+	if (where == 3) {
+		for (int i = 1; i <= Gre_cnt; i++) {
+			show_line();
+			printf("英文单词：%s\n", Gre[i].word.eng_word);
+			printf("中文意思：%s\n", Gre[i].word.chi_word);
+			printf("已背次数：%d\n", Gre[i].word.know_cnt);
+			printf("是否被斩：");
+			if (Gre[i].word.pass_flag) printf("是\n");
+			else printf("否\n");
+			show_line();
+		}
+	}
+	printf("显示完成\n");
+	show_line();
+}
+void find(int where) {
+	char findword[55] = "";
+	printf("请输入要查询的英文单词\n");
+	scanf("%s", findword);
+	int find = 0;
+	show_line();
+	if (where == 1) {
+		for (int i = 1; i <= YaSi_cnt; i++) {
+			if (strcmp(YaSi[i].word.eng_word, findword) == 0) {
+				find = 1;
+				printf("该单词中文意思为：%s\n", YaSi[i].word.chi_word);
+				break;
+			}
+		}
+	}
+	if (where == 2) {
+		for (int i = 1; i <= TuoFu_cnt; i++) {
+			if (strcmp(TuoFu[i].word.eng_word, findword) == 0) {
+				find = 1;
+				printf("该单词中文意思为：%s\n", TuoFu[i].word.chi_word);
+				break;
+			}
+		}
+	}
+	if (where == 3) {
+		for (int i = 1; i <= Gre_cnt; i++) {
+			if (strcmp(Gre[i].word.eng_word, findword) == 0) {
+				find = 1;
+				printf("该单词中文意思为：%s\n", Gre[i].word.chi_word);
+				break;
+			}
+		}
+	}
+	if (!find) {
+		printf("抱歉， 该词库没有该单词\n");
+	}
+	show_line();
+}
+
+int B_cnt = 0;
+int Bei[50005]; // 放随机的单词下标
+int vis[50005]; // 防止把重复的下标都放进去
+int judge[50005]; // 看是否正确回答5次，
+void beidanci(int where, int num) {
+	int t = 5;
+	B_cnt = 0;
+	memset(vis, 0, sizeof(vis));
+	memset(judge, 0, sizeof(judge));
+	show_line();
+
+	char wword[50] = { 0 };
+	if (where == 1) {
+		//  随机选该词库的单词
+		while (B_cnt < num) {
+			int pos = rand() % YaSi_cnt + 1;
+			if (!vis[pos]) {
+				Bei[++B_cnt] = pos;
+				vis[pos] = 1;
+			}
+		}
+
+		for (int i = 1; i <= t; i++) {
+			for (int j = 1; j <= num; j++) 
+			{
+				printf("中文为：%s 的英文为：\n", YaSi[Bei[j]].word.chi_word);
+				scanf("%s", wword);
+
+				if (strcmp(YaSi[Bei[j]].word.eng_word, wword) == 0) {
+					judge[Bei[j]]++;
+					YaSi[Bei[j]].word.know_cnt++;
+					printf("回答正确，再接再厉！\n");
+					if (judge[Bei[j]] == 5) {
+						YaSi[Bei[j]].word.pass_flag = 1;
+					}
+				}
+				else {
+					printf("回答错误，加油哦！\n");
+				}
+			}
+		}
+	}
+	if (where == 2) {
+		while (B_cnt < num) {
+			int pos = rand() % TuoFu_cnt + 1;
+			if (!vis[pos]) {
+				Bei[++B_cnt] = pos;
+				vis[pos] = 1;
+			}
+		}
+
+		for (int i = 1; i <= t; i++) {
+			for (int j = 1; j <= num; j++)
+			{
+				printf("中文为：%s 的英文为：\n", TuoFu[Bei[j]].word.chi_word); 
+				scanf("%s", wword);
+				if (strcmp(TuoFu[Bei[j]].word.eng_word, wword) == 0) {
+					judge[Bei[j]]++;
+					TuoFu[Bei[j]].word.know_cnt++;
+					printf("回答正确，再接再厉！\n");
+					if (judge[Bei[j]] == 5) {
+						TuoFu[Bei[j]].word.pass_flag = 1;
+					}
+				}
+				else {
+					printf("回答错误，加油哦！\n");
+				}
+			}
+		}
+	}
+	if (where == 3) {
+		while (B_cnt < num) {
+			int pos = rand() % Gre_cnt + 1;
+			if (!vis[pos]) {
+				Bei[++B_cnt] = pos;
+				vis[pos] = 1;
+			}
+		}
+		for (int i = 1; i <= t; i++) {
+			for (int j = 1; j <= num; j++)
+			{
+				printf("中文为：%s 的英文为：\n", Gre[Bei[j]].word.chi_word); 
+				scanf("%s", wword);
+				if (strcmp(Gre[Bei[j]].word.eng_word, wword) == 0) {
+					judge[Bei[j]]++;
+					Gre[Bei[j]].word.know_cnt++;
+					printf("回答正确，再接再厉！\n");
+					if (judge[Bei[j]] == 5) {
+						Gre[Bei[j]].word.pass_flag = 1;
+					}
+				}
+				else {
+					printf("回答错误，加油哦！\n");
+				}
+			}
+		}
+	}
+
+	printf("背词结束\n");
+	show_line();
+}
+void find_pass(int where) {
+	show_line();
+	if (where == 1) {
+		for (int i = 1; i <= YaSi_cnt; i++) {
+			if (YaSi[i].word.pass_flag) {
+				show_line();
+				printf("英文单词：%s\n", YaSi[i].word.eng_word);
+				printf("中文意思：%s\n", YaSi[i].word.chi_word);
+				printf("已背次数：%d\n", YaSi[i].word.know_cnt);
+				show_line();
+			}
+		}
+	}
+	if (where == 2) {
+		for (int i = 1; i <= TuoFu_cnt; i++) {
+			if (TuoFu[i].word.pass_flag) {
+				show_line();
+				printf("英文单词：%s\n", TuoFu[i].word.eng_word);
+				printf("中文意思：%s\n", TuoFu[i].word.chi_word);
+				printf("已背次数：%d\n", TuoFu[i].word.know_cnt);
+				show_line();
+			}
+		}
+	}
+	if (where == 3) {
+		for (int i = 1; i <= Gre_cnt; i++) {
+			if (Gre[i].word.pass_flag) {
+				show_line();
+				printf("英文单词：%s\n", Gre[i].word.eng_word);
+				printf("中文意思：%s\n", Gre[i].word.chi_word);
+				printf("已背次数：%d\n", Gre[i].word.know_cnt);
+				show_line();
+			}
+		}
+	}
+	printf("查询成功\n");
+	show_line();
+
+}
+void find_nopass(int where) {
+	show_line();
+
+	if (where == 1) {
+		for (int i = 1; i <= YaSi_cnt; i++) {
+			if (!YaSi[i].word.pass_flag) {
+				show_line();
+				printf("英文单词：%s\n", YaSi[i].word.eng_word);
+				printf("中文意思：%s\n", YaSi[i].word.chi_word);
+				printf("已背次数：%d\n", YaSi[i].word.know_cnt);
+				show_line();
+			}
+		}
+	}
+	if (where == 2) {
+		for (int i = 1; i <= TuoFu_cnt; i++) {
+			if (!TuoFu[i].word.pass_flag) {
+				show_line();
+				printf("英文单词：%s\n", TuoFu[i].word.eng_word);
+				printf("中文意思：%s\n", TuoFu[i].word.chi_word);
+				printf("已背次数：%d\n", TuoFu[i].word.know_cnt);
+				show_line();
+			}
+		}
+	}
+	if (where == 3) {
+		for (int i = 1; i <= Gre_cnt; i++) {
+			if (!Gre[i].word.pass_flag) {
+				show_line();
+				printf("英文单词：%s\n", Gre[i].word.eng_word);
+				printf("中文意思：%s\n", Gre[i].word.chi_word);
+				printf("已背次数：%d\n", Gre[i].word.know_cnt);
+				show_line();
+			}
+		}
+	}
+	printf("查询成功\n");
+	show_line();
+}
+void find_unkonw(int where) {
+	show_line();
+	if (where == 1) {
+		for (int i = 1; i <= YaSi_cnt; i++) {
+			if (!YaSi[i].word.know_cnt) {
+				show_line();
+				printf("英文单词：%s\n", YaSi[i].word.eng_word);
+				printf("中文意思：%s\n", YaSi[i].word.chi_word);
+				printf("是否被斩：");
+				if (YaSi[i].word.pass_flag) printf("是\n");
+				else printf("否\n");
+				show_line();
+			}
+		}
+	}
+	if (where == 2) {
+		for (int i = 1; i <= TuoFu_cnt; i++) {
+			if (!TuoFu[i].word.know_cnt) {
+				show_line();
+				printf("英文单词：%s\n", TuoFu[i].word.eng_word);
+				printf("中文意思：%s\n", TuoFu[i].word.chi_word);
+				printf("是否被斩：");
+				if (TuoFu[i].word.pass_flag) printf("是\n");
+				else printf("否\n");
+				show_line();
+			}
+		}
+	}
+	if (where == 3) {
+		for (int i = 1; i <= Gre_cnt; i++) {
+			if (!Gre[i].word.know_cnt) {
+				show_line();
+				printf("英文单词：%s\n", Gre[i].word.eng_word);
+				printf("中文意思：%s\n", Gre[i].word.chi_word);
+				printf("是否被斩：");
+				if (Gre[i].word.pass_flag) printf("是\n");
+				else printf("否\n");
+				show_line();
+			}
+		}
+	}
+	printf("查询成功\n");
+	show_line();
+}
+
+int main()
+{
+	srand(time(NULL));
+
+	while (1) 
+	{
+		table();
+		int op; scanf("%d", &op);
+		if (op == 0) {
+			printf("欢迎下次使用~~~\n");
+			break;
+		}
+		if (op == 1) {
+			Where();
+			int where; scanf("%d", &where);
+			add(where);
+		}
+		if (op == 2) {
+			Where();
+			int where; scanf("%d", &where);
+			show_all(where);
+		}
+		if (op == 3) {
+			Where();
+			int where; scanf("%d", &where);
+			find(where);
+		}
+		if (op == 4) {
+			Where();
+			int where; scanf("%d", &where);
+			printf("要背的数量\n");
+			int num; scanf("%d", &num);
+			if (where == 1) {
+				while (num > YaSi_cnt) {
+					printf("重新输入， 词库数量不够\n");
+					scanf("%d", &num);
+				}
+			}
+			if (where == 2) {
+				while (num > TuoFu_cnt) {
+					printf("重新输入， 词库数量不够\n");
+					scanf("%d", &num);
+				}
+			}
+			if (where == 3) {
+				while (num > Gre_cnt) {
+					printf("重新输入， 词库数量不够\n");
+					scanf("%d", &num);
+				}
+			}
+			beidanci(where, num);
+
+		}
+		if (op == 5) {
+			Where();
+			int where; scanf("%d", &where);
+			find_pass(where);
+		}
+		if (op == 6) {
+			Where();
+			int where; scanf("%d", &where);
+			find_nopass(where);
+		}
+		if (op == 7) {
+			Where();
+			int where; scanf("%d", &where);
+			find_unkonw(where);
+		}
+		system("pause");
+		system("cls");
+	}
+	return 0;
+}

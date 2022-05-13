@@ -1,0 +1,215 @@
+#include <stdio.h>
+#include <string.h>
+#include <Windows.h>
+
+struct Node {
+
+	// 职工号，姓名， 职称， 性别，2门课名字， 2门课效果，平均分
+	char id[20];
+	char name[20];
+	char dep[20];
+	char sex[20];
+
+	char cou[2][20];
+	double xia[2];
+	double sco;
+}tea[1000006];
+
+int op;
+int tot = 0;
+int i, j;
+int f;
+char name[100];
+
+typedef struct Node node;
+
+void Swap(node* a, node* b) {
+	node x;
+	strcpy((x).id, a->id);
+	strcpy((x).name, a->name);
+	strcpy((x).dep, a->dep);
+	strcpy((x).sex, a->sex);
+
+	for (i = 0; i < 2; i++) {
+		strcpy((x).cou[i], a->cou[i]);
+		x.xia[i] = a->xia[i];
+	}
+	x.sco = a->sco;
+	///////////////////////////////////////
+	strcpy(a->id, b->id);
+	strcpy(a->name, b->name);
+	strcpy(a->dep, b->dep);
+	strcpy(a->sex, b->sex);
+
+	for (i = 0; i < 2; i++) {
+		strcpy(a->cou[i], b->cou[i]);
+		a->xia[i] = b->xia[i];
+	}
+	a->sco = b->sco;
+	//////////////////////////////////////
+	strcpy(b->id, x.id);
+	strcpy(b->name, x.name);
+	strcpy(b->dep, x.dep);
+	strcpy(b->sex, x.sex);
+
+	for (i = 0; i < 2; i++) {
+		strcpy(b->cou[i], x.cou[i]);
+		b->xia[i] = x.xia[i];
+	}
+	b->sco = x.sco;
+}
+void add() {
+	tot++;
+	printf("输入职工号: ");
+	scanf("%s", tea[tot].id);
+	printf("输入姓名: ");
+	scanf("%s", tea[tot].name);
+	printf("输入职称: ");
+	scanf("%s", tea[tot].dep);
+	printf("输入性别: ");
+	scanf("%s", tea[tot].sex);
+
+	for (i = 0; i < 2; i++) {
+		printf("输入课程名： "); 	scanf("%s", tea[tot].cou[i]);
+		printf("输入课程效果： "); 	scanf("%lf", &tea[tot].xia[i]);
+		tea[tot].sco += tea[tot].xia[i];
+	}
+	tea[tot].sco /= 2;
+}
+
+void show() {
+	for (i = 1; i <= tot; i++) {
+		printf("职工号： "); printf("%s\n", tea[i].id);
+		printf("姓名： "); printf("%s\n", tea[i].name);
+		printf("职称： "); printf("%s\n", tea[i].dep);
+		printf("性别： "); printf("%s\n", tea[i].sex);
+		for (j = 0; j < 2; j++)
+			printf("课程：%s     效果： %.3lf    平均值： %.3lf\n", tea[i].cou[j], tea[i].xia[j], tea[i].sco);
+
+		printf("\n");
+	}
+}
+
+void find() {
+	f = 0;
+	printf("请输入要查找的老师姓名: "); scanf("%s", name);
+	for (i = 1; i <= tot; i++) {
+		if (strcmp(tea[i].name, name) == 0) {
+			f = 1;
+			printf("职工号： "); printf("%s\n", tea[i].id);
+			printf("姓名： "); printf("%s\n", tea[i].name);
+			printf("职称： "); printf("%s\n", tea[i].dep);
+			printf("性别： "); printf("%s\n", tea[i].sex);
+			for (j = 0; j < 2; j++)
+				printf("课程：%s     效果： %.3lf    平均值： %.3lf\n", tea[i].cou[j], tea[i].xia[j], tea[i].sco);
+
+			printf("\n");
+		}
+	}
+	if (!f) printf("未找到信息\n");
+}
+
+void del() {
+	f = 0;
+	printf("请输入要删除的老师姓名: ");
+	scanf("%s", name);
+	for (i = 1; i <= tot; i++) {
+		if (strcmp(tea[i].name, name) == 0) {
+			f = 1;
+			for (j = i + 1; j <= tot; j++) {
+				Swap(&tea[j - 1], &tea[j]);
+			}
+			tot--;
+		}
+	}
+	if (!f) printf("未找到信息\n");
+}
+
+void change() {
+	f = 0;
+	printf("请输入要修改的老师姓名: ");
+	scanf("%s", name);
+
+	for (i = 1; i <= tot; i++) {
+		if (strcmp(tea[i].name, name) == 0) {
+			f = 1;
+			printf("更新职工号: ");
+			scanf("%s", tea[i].id);
+			printf("更新姓名: ");
+			scanf("%s", tea[i].name);
+			printf("更新职称: ");
+			scanf("%s", tea[i].dep);
+			printf("更新性别: ");
+			scanf("%s", tea[i].sex);
+
+			for (j = 0; j < 2; j++) {
+				printf("更新课程名： "); 	scanf("%s", tea[i].cou[j]);
+				printf("更新课程效果： "); 	scanf("%lf", &tea[i].xia[j]);
+				tea[i].sco += tea[i].xia[j];
+			}
+			break;
+		}
+	}
+	if (!f) printf("未找到信息\n");
+}
+int main()
+{
+	while (1) {
+		printf("1: 增加老师记录\n");
+		printf("2: 显示全部信息\n");
+		printf("3: 排序和显示\n");
+		printf("4: 查找老师信息\n");
+		printf("5: 删除老师信息\n");
+		printf("6: 修改老师信息\n");
+		printf("7: id查找老师信息\n");
+		scanf("%d", &op);
+
+		if (op == 1) {
+			add();
+		}
+		if (op == 2) {
+			show();
+		}
+		if (op == 3) {
+			for (i = 1; i <= tot; i++) {
+				for (j = 1; j <= tot; j++) {
+					if (tea[i].sco < tea[j].sco) {
+						Swap(&tea[i], &tea[j]);
+					}
+				}
+			}
+			show();
+		}
+		if (op == 4) {
+			find();
+		}
+		if (op == 5) {
+			del();
+		}
+		if (op == 6) {
+			change();
+		}
+		if (op == 7) {
+			f = 0;
+			printf("请输入要查找的老师id: "); scanf("%s", name);
+			for (i = 1; i <= tot; i++) {
+				if (strcmp(tea[i].id, name) == 0) {
+					f = 1;
+					printf("职工号： "); printf("%s\n", tea[i].id);
+					printf("姓名： "); printf("%s\n", tea[i].name);
+					printf("职称： "); printf("%s\n", tea[i].dep);
+					printf("性别： "); printf("%s\n", tea[i].sex);
+					for (j = 0; j < 2; j++)
+						printf("课程：%s     效果： %.3lf    平均值： %.3lf\n", tea[i].cou[j], tea[i].xia[j], tea[i].sco);
+
+					printf("\n");
+				}
+			}
+			if (!f) printf("未找到信息\n");
+		}
+		system("pause");
+		system("cls");
+	}
+
+	return 0;
+}

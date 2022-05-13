@@ -1,0 +1,290 @@
+#include<graphics.h>
+#include<mmsystem.h>
+#include<conio.h>
+#include<time.h>
+#include<stdlib.h>
+#include<stdio.h>
+#include<math.h>
+#pragma comment(lib,"winmm.lib")
+#define MAXSTAR 1000
+
+//窗口宽高
+const int WIDTH = 1000;
+const int HEIGHT = 500;
+
+int Score = 0;
+IMAGE bk, hbk;
+
+struct STAR
+{
+	double x;
+	int y;
+	double step;
+	int color;
+};
+STAR star[MAXSTAR];
+
+void MYmusic();			//音乐
+void goodbye();			// 退出界面
+
+void InitStar(int i)// 移动星星
+{
+	star[i].x = 0;
+	star[i].y = rand() % 500;
+	star[i].step = (rand() % 5000) / 1000.0 + 1;
+	star[i].color = (int)(star[i].step * 255 / 6.0 + 0.5);	// 速度越快，颜色越亮
+	star[i].color = RGB(star[i].color, star[i].color, star[i].color);
+}
+void MoveStar(int i)
+{
+	putpixel((int)star[i].x, star[i].y, 0);	// 擦掉原来的星星
+	star[i].x += star[i].step;	// 计算新位置
+	if (star[i].x > 810)
+		InitStar(i);
+	putpixel((int)star[i].x, star[i].y, star[i].color);	// 画新星星
+}
+
+// 退出界面
+void goodbye()
+{
+	cleardevice();
+	setbkcolor(BLACK);
+	cleardevice();
+	int c = 0;
+	int d = 8;//用来变色
+	for (int i = 0; i < MAXSTAR; i++)	// 初始化所有星星
+	{
+		InitStar(i);
+		star[i].x = rand() % 640;
+	}
+
+	while (!_kbhit())//没有按下0，按下非0 //实现闪烁
+	{
+		for (int i = 0; i < MAXSTAR; i++)	// 绘制星空，按任意键退出
+			MoveStar(i);
+		settextcolor(YELLOW);
+		settextstyle(48, 0, _T("黑体"));
+		outtextxy(104, 180, _T("   恭喜打败怪兽"));
+
+		char s[30];
+		sprintf(s, "%d", Score);
+		outtextxy(104, 280, "  得分为：");
+		outtextxy(400, 280, s);
+
+		settextcolor(RGB(100, c, c));
+		outtextxy(280, 400, _T("再见"));
+		c += d;
+		if (c < 8 || c>245)
+			d = -d; //实现闪烁
+		Sleep(20);
+	}
+	_getch();
+}
+
+int cnt;
+struct ZiDan {
+	int x, y;
+}zidan[1000005];
+
+void game() {
+
+	int Time = 60;
+
+	IMAGE gs, gsb, cr, crb, st, stb, tx, txb;
+
+	int GWeigh = 100;
+	int GHight = 200;
+
+	int CWeigh = 150;
+	int CHeigh = 150;
+
+	int SWeigh = 30;
+	int SHeigh = 30;
+
+	loadimage(&gs, "gs.jpg", GWeigh, GHight);
+	loadimage(&gsb, "gsb.jpg", GWeigh, GHight);
+
+	loadimage(&cr, "cr.jpg", CWeigh, CHeigh);
+	loadimage(&crb, "crb.jpg", CWeigh, CHeigh);
+
+	loadimage(&tx, "tx.jpg", CWeigh, CHeigh);
+	loadimage(&txb, "txb.jpg", CWeigh, CHeigh);
+
+	loadimage(&st, "st.jpg", 30, 30);
+	loadimage(&stb, "stb.jpg", 30, 30);
+
+	int Gnowx = 900;
+	int Gnowy = 300;
+
+	int Cnowx = 0;
+	int Cnowy = 350;
+
+	int Gxue = 100; ///  怪兽血量
+
+
+	putimage(Gnowx, Gnowy, &gsb, SRCPAINT);
+	putimage(Gnowx, Gnowy, &gs, SRCAND);
+
+	putimage(Cnowx, Cnowy, &crb, SRCPAINT);//这两个不能放反
+	putimage(Cnowx, Cnowy, &cr, SRCAND);//三元光栅
+
+	int fangxiang = 1;
+	while (1) 
+	{
+		BeginBatchDraw();
+		int pos = 0;
+		for (int i = 0; i < MAXSTAR; i++)	// 初始化所有星星
+		{
+			InitStar(i);
+			star[i].x = rand() % 640;
+		}
+
+		putimage(0, 0, &bk);//背景 
+
+		for (int i = 1; i <= cnt; i++)
+		{
+			if (zidan[i].x <= 1000 && zidan[i].x > 0) {
+				putimage(zidan[i].x, zidan[i].y, &stb, SRCPAINT);
+				putimage(zidan[i].x, zidan[i].y, &st, SRCAND);
+			}
+		}
+
+		putimage(Cnowx, Cnowy, &crb, SRCPAINT);//这两个不能放反
+		putimage(Cnowx, Cnowy, &cr, SRCAND);//三元光栅
+
+		putimage(Gnowx, Gnowy, &gsb, SRCPAINT);
+		putimage(Gnowx, Gnowy, &gs, SRCAND);
+
+
+		if (_kbhit())
+		{
+
+			char key = _getch();
+			if (key == 'W') {
+				Cnowy -= 5;
+				if (Cnowy < 0) Cnowy = 0;
+			}
+			if (key == 'S') {
+				Cnowy += 5;
+				if (Cnowy > 350) Cnowy = 350;
+			}
+			if (key == 'A') {
+				Cnowx -= 5;
+				if (Cnowx < 0) Cnowx = 0;
+			}
+			if (key == 'D') {
+				Cnowx += 5;
+				if (Cnowx > 850) Cnowx = 850;
+			}
+			if (key == 32) {
+				++cnt;
+				zidan[cnt].x = Cnowx + CWeigh / 2;
+				zidan[cnt].y = Cnowy + CHeigh / 2;
+				cleardevice();
+				putimage(0, 0, &hbk);
+			}
+			
+		}
+		
+		if (fangxiang) {
+			Gnowy -= 1;
+			if (Gnowy < 0) fangxiang = 0, Gnowy = 0;
+		}
+		else {
+			Gnowy += 1;
+			if (Gnowy > 300) fangxiang = 1, Gnowy = 300;
+		}
+
+		for (int i = 1; i <= cnt; i++) zidan[i].x += 2;
+
+
+		// 看是否打到怪兽
+		for (int i = 1; i <= cnt; i++)
+		{
+			if (Gnowx <= zidan[i].x && Gnowy <= zidan[i].y && zidan[i].y <= Gnowy + 200)
+			{
+				Score++;
+				Gxue--;
+			}
+		}
+
+		// 更新pao弹
+		for (int i = 1; i <= cnt; i++) {
+			if (zidan[i].x >= Gnowx && Gnowy <= zidan[i].y && zidan[i].y <= Gnowy + 200) {
+				for (int j = i + 1; j <= cnt; j++) {
+					zidan[j - 1].x = zidan[j].x;
+					zidan[j - 1].y = zidan[j].y;
+				}
+				i -= 1;
+				cnt--;
+			}
+			else if (zidan[i].x > 1000) {
+				for (int j = i + 1; j <= cnt; j++) {
+					zidan[j - 1].x = zidan[j].x;
+					zidan[j - 1].y = zidan[j].y;
+				}
+				i -= 1;
+				cnt--;
+			}
+		}
+
+		setbkmode(TRANSPARENT);
+		outtextxy(500, 0, "怪兽血量为：");
+		char score[100] = "";
+		sprintf(score, "%d", Gxue);
+		outtextxy(600, 0, score);
+
+		outtextxy(500, 20, "时间还剩： ");
+		sprintf(score, "%d", Time);
+		outtextxy(600, 20, score);
+
+
+		if (Gxue <= 0) 
+		{
+			putimage(0, 0, &bk);//背景 
+			goodbye();
+		}
+
+		Sleep(10);
+		Time--;
+		EndBatchDraw();
+	}
+
+}
+
+
+// 欢迎界面
+void welcome()
+{
+	loadimage(&bk, "gwbk.jpg", 1000, 500);
+	loadimage(&hbk, "hbk.jpg", 1000, 500);
+	putimage(0, 0, &bk);
+
+
+	//while (1);
+	{
+		game();
+	}
+
+}
+
+//音乐
+void MYmusic()
+{
+	mciSendString("open  my.mp3", 0, 0, 0);
+	mciSendString("play my.mp3 repeat", 0, 0, 0);
+}
+
+void main()
+{
+	MYmusic();
+	initgraph(WIDTH, HEIGHT);
+	HWND hwnd = GetHWnd();					// 获取绘图窗口句柄(HWND)
+	SetWindowText(hwnd, "超人大战怪兽");				//使用 Windows API 修改窗口名称
+	MYmusic();
+	welcome();								// 开始界面
+	closegraph();
+}
+
+
+

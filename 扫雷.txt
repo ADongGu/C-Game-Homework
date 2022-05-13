@@ -1,0 +1,261 @@
+#include<stdio.h>
+#include<windows.h>
+#include<string.h>
+#include<time.h>
+#include<conio.h>
+
+typedef struct
+{
+	char nolei[5];
+	int leishu;
+	int ppp ;
+}STU;
+
+typedef struct
+{
+	int x;
+	int y;
+}DIR;
+
+int xx = 0, yy = 0;
+STU map[10][10];
+DIR dir;//控制方向
+int dengjishu;
+
+void gotoxy(int x, int y)
+{
+	HANDLE hout;
+	COORD pos;
+	pos.X = x;
+	pos.Y = y;
+
+	hout = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleCursorPosition(hout, pos);
+}
+/*隐藏光标*/
+void show_cursor(int hide)
+{
+	CONSOLE_CURSOR_INFO cciCursor;
+	HANDLE hout;
+
+	hout = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (GetConsoleCursorInfo(hout, &cciCursor))
+	{
+		cciCursor.bVisible = hide;
+		SetConsoleCursorInfo(hout, &cciCursor);
+	}
+}
+void set_color(int color)
+{
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+void initmap()
+{
+	int i, j;
+	for (i = 0; i < 9; i++)
+	{
+		for (j = 0; j < 9; j++)
+		{
+			//初始化
+			strcpy(map[i][j].nolei, "■");
+			map[i][j]. ppp = 0;
+		}
+	}
+}
+int leishudir(int x, int y)
+{
+	int i, a, b, sum = 0, fx[8][2] = { {-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1} };
+	for (i = 0; i < 8; i++)
+	{
+		a = x + fx[i][0];
+		b = y + fx[i][1];
+		if (map[a][b].ppp == 1)
+		{
+			sum++;
+		}
+	}
+	return sum;
+}
+void tongjileishu()//统计雷数
+{
+	int i, j, k;
+	for (i = 0; i < 9; i++)
+	{
+		for (j = 0; j < 9; j++)
+		{
+			map[i][j].leishu = leishudir(i, j);//8个方向
+		}
+	}
+}
+void yxnandu()
+{
+	int t, i, j, x, y, n;
+	gotoxy(50, 8);
+	printf("①初级 10个雷");
+	gotoxy(50, 10);
+	printf("②中级 20个雷");
+	gotoxy(50, 12);
+	printf("③高级 25个雷");
+	printf("");
+	gotoxy(50, 6);
+	printf("设置游戏难度:");
+	scanf("%d", &dengjishu);
+	switch (dengjishu)
+	{
+	case 1: n = 10; break;
+	case 2: n = 20; break;
+	case 3: n = 25; break;
+	}
+	while (n--)
+	{
+		t = rand() % 81;
+		x = t / 9;
+		y = t % 9;
+		if (map[x][y].ppp == 0)
+			map[x][y]. ppp = 1;//1就是雷
+		else
+			n++;
+	}
+	tongjileishu();
+}
+void end()
+{
+	printf("游戏结束");
+	MessageBox(NULL, TEXT("踩到地雷！！游戏结束"), TEXT("显示"), 0);
+	system("pause");
+	exit(0);
+}
+void printbk()
+{
+	int i, j, k = 0;
+	system("cls");
+	//游戏提示
+	gotoxy(50, 8);
+	printf("按\"回车\"键翻开");
+	//上框
+	gotoxy(1, 0);
+	for (i = 0; i < 10; i++)
+	{
+		printf("□□");
+	}
+	//下框
+	gotoxy(1, 20);
+	for (i = 0; i < 10; i++)
+	{
+		printf("□□");
+	}
+	//左宽
+	gotoxy(0, 0);
+	for (i = 0; i < 20; i++)
+	{
+		gotoxy(0, i);
+		printf("□");
+	}
+	//右框
+	gotoxy(40, 0);
+	for (i = 0; i < 20; i++)
+	{
+		gotoxy(40, i);
+		printf("□");
+	}
+	gotoxy(0, 0);
+	printf("★");
+	gotoxy(0, 20);
+	printf("★");
+	gotoxy(40, 0);
+	printf("★");
+	gotoxy(40, 20);
+	printf("★");
+
+}
+
+void printmap(int flag)
+{
+	int i, j, k = 0;
+
+	// move
+	switch (flag)
+	{
+	case 1:
+		if (dir.x - 1 >= 0)
+			dir.x--;
+		break;
+	case 2:
+		if (dir.y - 1 >= 0)
+			dir.y--;
+		break;
+	case 3:
+		if (dir.y + 1 < 9)
+			dir.y++;
+		break;
+	case 4:
+		if (dir.x + 1 < 9)
+			dir.x++;
+		break;
+	}
+
+	set_color(2);
+	for (i = 0; i < 9; i++)
+	{
+		gotoxy(2, 1 + i);
+		for (j = 0; j < 9; j++)
+		{
+			if (i == dir.x && j == dir.y)
+			{
+				set_color(4);
+				printf("%s", map[i][j].nolei);
+				set_color(2);
+			}
+			else
+			{
+				printf("%s", map[i][j].nolei);
+			}
+		}
+
+	}
+}
+void fangpai()
+{
+	char a[3];
+	if (map[xx][yy].ppp == 1)
+	{
+		strcpy(map[xx][yy].nolei, "※");
+		end();
+	}
+	else
+	{
+		a[0] = ' ';
+		a[1] = map[xx][yy].leishu + '0';
+		a[2] = '\0';
+		strcpy(map[xx][yy].nolei, a);
+	}
+}
+
+int main()
+{
+	show_cursor(0);
+	int i, j, flag = 0;
+	char ch, cht;
+	dir.x = 0;
+	dir.y = 0;
+	initmap();
+	yxnandu();
+	srand(time(NULL));
+	while (1)
+	{
+		printbk();
+		printmap(flag);
+		flag = 0;
+		if ((ch = getch()) < 0)	ch = getch();
+		switch (ch)
+		{
+		case 72:gotoxy(0, 20); xx <= 0 ? xx = 0 : xx--; flag = 1; printf("\n你的按键为向上"); break;
+		case 75:gotoxy(0, 20); yy <= 0 ? yy = 0 : yy--;  flag = 2; printf("\n你的按键为向左"); break;
+		case 77:gotoxy(0, 20); yy >= 8 ? yy = 8 : yy++; flag = 3; printf("\n你的按键为向右"); break;
+		case 80:gotoxy(0, 20); xx >= 8 ? xx = 8 : xx++;  flag = 4; printf("\n你的按键为向下"); break;
+		case 13:fangpai(); break;
+		}
+		Sleep(100);
+	}
+	return 0;
+}

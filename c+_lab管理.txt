@@ -1,0 +1,200 @@
+#include <string>
+#include<iostream>
+#include<algorithm>
+using namespace std;
+
+class Lab
+{
+public:
+	string getsysn();
+	string getsyyn();
+	string getcall();
+	string getpos();
+
+	void setsysn(string);
+	void setsyyn(string);
+	void setcall(string);
+	void setpos(string);
+
+	void insert();
+	void change();
+	void find();
+	void showall();
+
+private:
+	string sysn;
+	string syyn;
+	string call;
+	string pos;
+};
+
+string Lab::getsysn() {
+	return sysn;
+}
+string Lab::getsyyn() {
+	return syyn;
+}
+string Lab::getcall() {
+	return call;
+}
+string Lab::getpos() {
+	return pos;
+}
+
+void Lab::setsysn(string i) {
+	sysn = i;
+}
+void Lab::setsyyn(string i) {
+	syyn = i;
+}
+void Lab::setpos(string i) {
+	pos = i;
+}
+void Lab::setcall(string i) {
+	call = i;
+}
+
+void show() {
+	printf("=========================================\n");
+	printf("============  进入了实验室管理系统  =========\n");
+	printf("0:  退出系统\n");
+	printf("1:  插入数据\n");
+	printf("2:  修改数据\n");
+	printf("3:  删除数据\n");
+	printf("4:  找数据\n");
+	printf("5:  显示数据\n");
+	printf("=========================================\n");
+}
+
+void Lab::insert() {
+	printf("请输入新实验室名: \n");
+	cin >> sysn;
+	printf("请输入该管理员名: \n");
+	cin >> syyn;
+	printf("请输入联系方式: \n");
+	cin >> call;
+	printf("请输入地理位置: \n");
+	cin >> pos;
+}
+
+void Lab::change() {
+	while (1)
+	{
+		system("cls");
+		printf("=========================================\n");
+		printf("============  进入了修改系统    ==========\n");
+		printf("0:  退出\n");
+		printf("1:  修改实验室名\n");
+		printf("2:  修改管理员名\n");
+		printf("3:  修改联系方式\n");
+		printf("4:  修改地理位置\n");
+		printf("=========================================\n");
+		int op = 0; cin >> op;
+		if (!op) break;
+		if (op == 1) {
+			printf("请输入该实验室名: \n");
+			cin >> sysn;
+		}
+		if (op == 2) {
+			printf("请输入新管理员名: \n");
+			cin >> syyn;
+		}
+		if (op == 3) {
+			printf("请输入联系方式: \n");
+			cin >> call;
+		}
+		if (op == 4) {
+			printf("请输入地理位置: \n");
+			cin >> pos;
+		}
+		system("pause");
+	}
+}
+
+void Lab::find() {
+	printf("信息如下：\n");
+	printf("实验室名："); cout << getsysn() << "\n";
+	printf("管理员名："); cout << getsyyn() << "\n";
+	printf("联系方式："); cout << getcall() << "\n";
+	printf("地理位置："); cout << getpos() << "\n";
+}
+
+void Lab::showall() {
+	printf("=========================================\n");
+	printf("实验室名："); cout << getsysn() << "\n";
+	printf("管理员名："); cout << getsyyn() << "\n";
+	printf("联系方式："); cout << getcall() << "\n";
+	printf("地理位置："); cout << getpos() << "\n";
+	printf("=========================================\n");
+}
+
+int tot = 0;
+Lab lab[100005];
+
+int main()
+{
+	while (1)
+	{
+		show();
+		int op; cin >> op;
+		if (!op)cout << "  欢迎下次使用..........\n";
+		if (op == 1) {
+			lab[++tot].insert();
+		}
+
+		if (op == 2) {
+			string name;
+			printf("请输入需要修改的实验室名: "); cin >> name;
+			int f = 0;
+			for (int i = 1; i <= tot; i++) {
+				if (lab[i].getsysn() == name) {
+					f = 1;
+					lab[i].change();
+				}
+			}
+			if (!f) cout << "没有该实验室\n";
+		}
+		if (op == 3) {
+			string name;
+			printf("请输入需要删除的实验室名: "); cin >> name;
+			int f = 0;
+			for (int i = 1; i <= tot; i++) {
+				if (lab[i].getsysn() == name) {
+					f = 1;
+					for (int j = i + 1; j <= tot; j++) {
+						lab[j - 1].setsysn(lab[j].getsysn());
+						lab[j - 1].setsyyn(lab[j].getsyyn());
+						lab[j - 1].setpos(lab[j].getpos());
+						lab[j - 1].setcall(lab[j].getcall());
+					}
+					tot--;
+				}
+			}
+			if (!f) cout << "没有该实验室\n";
+		}
+		if (op == 4) {
+			string name;
+			printf("请输入需要寻找的实验室名: "); cin >> name;
+			int f = 0;
+			for (int i = 1; i <= tot; i++) {
+				if (lab[i].getsysn() == name) {
+					f = 1;
+					lab[i].find();
+				}
+			}
+			if (!f) cout << "没有该实验室\n";
+		}
+		if (op == 5) {
+			if (!tot) {
+				cout << "没有实验室数据\n";
+				continue;
+			}
+			for (int i = 1; i <= tot; i++) {
+				lab[i].showall();
+			}
+		}
+		system("pause");
+		system("cls");
+	}
+	return 0;
+}

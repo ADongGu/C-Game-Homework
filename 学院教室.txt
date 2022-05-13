@@ -1,0 +1,277 @@
+#include<cstdlib>
+#include<cstdio>
+#include<cstring>
+#include<string>
+#include <fstream>
+#include <iostream>
+using namespace std;
+
+class Course {
+public:
+	string course[3];
+	int stu_num[3];
+	int cou_num[3];
+	int judge[3];	// 教学评分
+	int cnt_cou;	// 看老师教了多少课；
+	Course() {}
+	Course(Course &t) {
+		
+	}
+	Course& operator = (Course &tmp) {
+		*this = tmp;
+	}
+	void add(int num) {
+		for (int i = 1; i <= num; i++) {
+			printf("请输入课程名 "); cin >> course[i];
+			printf("请输入该课程学生人数 "); cin >> stu_num[i];
+			printf("请输入该课程学时 "); cin >> cou_num[i];
+			judge[i] = 0;
+		}
+		cnt_cou = num;
+	}
+	void show() {
+		for (int i = 1; i <= cnt_cou; i++) {
+			printf("课程名: "); cout << course[i] << "\n";
+			printf("课程学生人数: "); cout << stu_num[i] << "\n";
+			printf("该课程学时: "); cout << cou_num[i] << "\n";
+		}
+	}
+	void change() {
+		printf("1: 增加课程\n");
+		printf("2: 改课程名\n");
+		printf("3：改学生人数 \n");
+		printf("4：改课程学时\n");
+		printf("5：改授课评分\n");
+		
+		int op; cin >> op;
+		if (op == 1) {
+			cnt_cou++;
+			printf("请输入课程名\n"); cin >> course[cnt_cou];
+			printf("请输入该课程学生人数\n"); cin >> stu_num[cnt_cou];
+			printf("请输入该课程学时\n"); cin >> cou_num[cnt_cou];
+		}
+		if (op == 2) {
+			printf("要改哪一门课:"); int pos; cin >> pos;
+			if (pos > cnt_cou) {
+				printf("非合法\n");
+				return;
+			}
+			printf("请输入课程名\n"); cin >> course[pos];
+		}
+		if (op == 3) {
+			printf("要改哪一门课:"); int pos; cin >> pos;
+			if (pos > cnt_cou) {
+				printf("非合法\n");
+				return;
+			}
+			printf("请输入该课程学生人数\n"); cin >> stu_num[pos];
+		}
+		if (op == 4) {
+			printf("要改哪一门课:"); int pos; cin >> pos;
+			if (pos > cnt_cou) {
+				printf("非合法\n");
+				return;
+			}
+			printf("请输入该课程学时\n"); cin >> cou_num[pos];
+		}
+		if (op == 5) {
+			printf("要改哪一门课:"); int pos; cin >> pos;
+			if (pos > cnt_cou) {
+				printf("非合法\n");
+				return;
+			}
+			printf("请输入该课评分\n"); cin >> judge[pos];
+		}
+	}
+	void del() {
+		printf("要删哪一门课:"); int pos; cin >> pos;
+		for (int i = pos; i < cnt_cou; i++) {
+			course[i] = course[i + 1];
+			stu_num[i] = stu_num[i + 1];
+			cou_num[i] = cou_num[i + 1];
+			judge[i] = judge[i + 1];
+		}
+		cnt_cou--;
+	}
+	int getsum() {
+		int res = 0;
+		for (int i = 1; i <= cnt_cou; i++) {
+			res += judge[i];
+		}
+		return res;
+	}
+};
+
+class Teacher {
+public:
+	string id, name, job, sex;
+	Course C;
+	Teacher() {
+		id = name = job = sex = "";
+	}
+	Teacher(Teacher& t) {
+		id = t.id;
+		name = t.name;
+		job = t.job;
+		sex = t.sex;
+		for (int i = 1; i <= t.C.cnt_cou; i++) {
+			C.course[i] = t.C.course[i];
+			C.stu_num[i] = t.C.stu_num[i];
+			C.cou_num[i] = t.C.cou_num[i];
+			C.judge[i] = t.C.judge[i];
+		}
+		C.cnt_cou = t.C.cnt_cou;
+	}
+	Teacher& operator = (const Teacher& t) {
+		id = t.id;
+		name = t.name;
+		job = t.job;
+		sex = t.sex;
+		for (int i = 1; i <= t.C.cnt_cou; i++) {
+			C.course[i] = t.C.course[i];
+			C.stu_num[i] = t.C.stu_num[i];
+			C.cou_num[i] = t.C.cou_num[i];
+			C.judge[i] = t.C.judge[i];
+		}
+		C.cnt_cou = t.C.cnt_cou;
+		return *this;
+	}
+	void add() {
+		printf("id: "); cin >> id;
+		printf("姓名: "); cin >> name;
+		printf("职称: "); cin >> job;
+		printf("性别: "); cin >> sex;
+		printf("要加多少门课：");
+		int num; cin >> num;
+		C.add(num);
+	};
+	void show() {
+		printf("-------------------------------------\n");
+		printf("id: "); cout << id << "\n";
+		printf("姓名: "); cout << name << "\n";
+		printf("职称: "); cout << job << "\n";
+		printf("性别: "); cout << sex << "\n";
+		printf("该老师总评分: "); cout << C.getsum() << "\n";
+
+		C.show();
+		printf("-------------------------------------\n");
+	}
+	void change(){
+		while (1) {
+			printf("1: 改id\n");
+			printf("2：改名字 \n");
+			printf("3：改职称\n");
+			printf("4：改性别\n");
+			printf("5：改授课情况\n");
+			printf("6：退出\n");
+			int op; cin >> op;
+			if (op == 1) {
+				printf("改id: "); cin >> id;
+			}
+			if (op == 2) {
+				printf("改名字: "); cin >> name;
+			}
+			if (op == 3) {
+				printf("改职称: "); cin >> job;
+			}
+			if (op == 4) {
+				printf("改性别: "); cin >> sex;
+			}
+			if (op == 5) {
+				C.change();
+			}
+			if (op == 6) {
+				return;
+			}
+			system("pause");
+			system("cls");
+		}
+	}
+};
+
+int cnt;
+Teacher teacher[10005];
+
+int main()
+{
+	while (1) {
+		printf("0: 退出\n");
+		printf("1: 显示数据\n");
+		printf("2: 查找数据\n");
+		printf("3: 添加数据\n");
+		printf("4: 排序并显示\n");
+		printf("5: 保存文件\n");
+		printf("6: 修改数据\n");
+		int op; cin >> op;
+		if (!op) {
+			printf("欢迎下次使用！");
+			break;
+		}
+		if (op == 1) {
+			for (int i = 1; i <= cnt; i++) {
+				teacher[i].show();
+			}
+		}
+		if (op == 2) {
+			printf("查找姓名为: "); 
+			string name; cin >> name;
+
+			int f = 0;
+			for (int i = 1; i <= cnt; i++) {
+				if (teacher[i].name == name) {
+					teacher[i].show();
+					f = 1;
+				}
+			}
+			if (!f) printf("未找到\n");
+		}
+		if (op == 3) {
+			cnt++;
+			teacher[cnt].add();
+		}
+		if (op == 4) {
+			for (int i = 1; i<= cnt; i++)
+				for (int j = i + 1; j <= cnt; j++)
+				{
+					if (teacher[i].C.getsum() > teacher[j].C.getsum()) {
+						Teacher s(teacher[i]);
+						teacher[i] = teacher[j];
+						teacher[j] = s;
+					}
+				}
+			printf("排序结果如下\n");
+			for (int i = 1; i <= cnt; i++)
+				teacher[i].show();
+
+		}
+		if (op == 5) {
+			fstream file("teacher.txt", ios::out);
+			for (int i = 1; i <= cnt; i++) 
+			{
+				file << teacher[i].id << " " << teacher[i].name << " " << teacher[i].job << " " << teacher[i].sex
+					<< "\n";
+				for (int j = 1; j <= teacher[i].C.cnt_cou; j++)
+				{
+					file << teacher[i].C.course[j] << " " << teacher[i].C.stu_num[j] << " " << teacher[i].C.cnt_cou
+						<< " " << teacher[i].C.getsum() << "\n";
+				}
+			}
+		}
+		if (op == 6) {
+			printf("需要修改的老师姓名为: ");
+			string name; cin >> name;
+
+			int f = 0;
+			for (int i = 1; i <= cnt; i++) {
+				if (teacher[i].name == name) {
+					teacher[i].change();
+					f = 1;
+				}
+			}
+			if (!f) printf("未找到\n");
+		}
+		system("pause");
+		system("cls");
+	}
+	return 0;
+}

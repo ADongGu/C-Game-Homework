@@ -1,0 +1,170 @@
+#include <stdio.h>
+#include <string.h>
+
+struct BOOK {
+	char id[20], name[20];
+	int has, sum;
+	double jg;
+	char give[30];
+}book[100005];
+
+struct MEN {
+	char id[20], name[20], sex[20];
+	int jie, manum;
+}men[1000005];
+
+int f;
+int totb;
+int totm;
+char id[20];
+char name[20];
+
+int main() {
+
+
+	while (1) {
+		printf("1: 图书查询\n");
+		printf("2: 用户查询\n");
+		printf("3: 借书\n");
+		printf("4: 还书\n");
+		printf("5: 排序\n");
+		printf("6: 退出\n");
+		printf("7: 增加图书\n");
+		printf("8: 增加用户\n");
+
+		int op; scanf("%d", &op);
+		if (op == 1) {
+			printf("请输入图书编号");
+			scanf("%s", id);
+			f = 0;
+			for (int i = 1; i <= totb; i++) {
+				if (strcmp(book[i].id, id) == 0) {
+					printf("%s\t %s\t %d本\t %d本\t %.2lf 元\n",
+						book[i].id, book[i].name, book[i].sum, book[i].has, book[i].jg);
+					f = 1;
+					break;
+				}
+			}
+			if (!f)printf("没有相关信息\n");
+		}
+		if (op == 2) {
+			printf("请输入图书证编号");
+			scanf("%s", id);
+			f = 0;
+			for (int i = 1; i <= totm; i++) {
+				if (strcmp(men[i].id, id) == 0) {
+					printf("%s\t%s\t%s\t%已借：d本\t最大借书数量：%d本\n",
+						men[i].id, men[i].name, men[i].sex,men[i].jie, men[i].manum);
+
+					for (int j = 1; j <= totb; j++) {
+						if (strcmp(men[i].id, book[j].give) == 0) {
+							printf("%s\t%s\t%.2lf元\n",
+								book[i].id, book[i].name, book[i].jg);
+						}
+					}
+					f = 1;
+					break;
+				}
+			}
+			if (!f)printf("没有相关信息\n");
+		}
+		if (op == 3) {
+			printf("请输入图书证编号");
+			scanf("%s", id);
+			f = 0;
+
+			for (int i = 1; i <= totm; i++) 
+			{
+				if (strcmp(men[i].id, id) == 0) {
+					
+					printf("请输入图书名字");
+					scanf("%s", name);
+					int t = 0;
+					for (int j = 1; j <= totb; j++) {
+						if (strcmp(book[j].name, name) == 0 && book[j].has != 0 ) {
+							strcpy(book[j].give, men[i].id);
+							book[j].has -= 1;
+							t = 1;
+							break;
+						}
+					}
+					if (!t)printf("借书失败\n");
+					f = 1;
+					break;
+				}
+			}
+
+			if (!f)printf("没有相关信息\n");
+		}
+		if (op == 4) {
+			printf("请输入图书证编号");
+			scanf("%s", id);
+			f = 0;
+
+			for (int i = 1; i <= totm; i++)
+			{
+				if (strcmp(men[i].id, id) == 0) {
+
+					printf("请输入图书名字");
+					scanf("%s", name);
+					int t = 0;
+					for (int j = 1; j <= totb; j++) {
+						if (strcmp(book[j].name, name) == 0) {
+							strcpy(book[j].give, "");
+							book[j].has += 1;
+							t = 1;
+							break;
+						}
+					}
+					if (!t)printf("还书失败\n");
+					f = 1;
+					break;
+				}
+			}
+
+			if (!f)printf("没有相关信息\n");
+		}
+		if (op == 5) {
+			for (int i = 1; i <= totb; i++) {
+				for (int j = 1; j <= totb; j++) {
+					if (book[i].jg > book[j].jg) {
+						struct BOOK b;
+						strcpy(b.id, book[i].id);
+						strcpy(b.name, book[i].name);
+						strcpy(b.give, book[i].name);
+						b.jg = book[i].jg;
+						b.sum = book[i].sum;
+						b.has = book[i].has;
+
+						strcpy(book[i].id, book[j].id);
+						strcpy(book[i].name, book[j].name);
+						strcpy(book[i].give, book[j].name);
+						book[i].jg = book[j].jg;
+						book[i].sum = book[j].sum;
+						book[i].has = book[j].has;
+
+						strcpy(book[j].id, b.id);
+						strcpy(book[j].name, b.name);
+						strcpy(book[j].name, b.give);
+						book[j].jg = b.jg;
+						book[j].sum = b.sum;
+						book[j].has = b.has;
+					}
+				}
+			}
+			printf("排序成功");
+		}
+		if (op == 6) { break; }
+		if (op == 7) { 
+			printf("依次输入图书编号，图书名称，图书价格，图书总数，现存数量");
+			scanf("%s%s%lf%d%d", book[++totb].id, book[totb].name, &book[totb].jg, &book[totb].sum, &book[totb].has);
+		}
+		if (op == 8) {  
+			printf("依次输入图书证编号，姓名，性别，借书数量，最大借阅数量");
+			scanf("%s%s%s%d%d", men[++totm].id, men[totm].name, men[totm].sex,&men[totm].jie, &men[totm].manum);
+		}
+		system("pause");
+		system("cls");
+	}
+	return 0;
+}

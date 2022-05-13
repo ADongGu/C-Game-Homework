@@ -1,0 +1,253 @@
+#include <string>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int year;
+int yue;
+
+class Worker {
+public:
+	//职工姓名、产假期、子女1姓名、子女1出生日期、子女2姓名、子女2出生日期、奶补费起止时间、奖励费起止时间、幼儿补起止时间。
+
+	string id;
+	string name;
+	string son[3];
+	int myear, myue;
+	int year1, yue1;
+	int year2, yue2;
+
+	int _1year, _1yue;
+	int _1eyear, _1eyue;
+	int _2year, _2yue;
+	int _2eyear, _2eyue;
+	int _3year, _3yue;
+	int _3eyear, _3eyue;
+
+	void operator =(const Worker& x) {
+		name = x.name;
+		son[1] = x.son[1];
+		son[2] = x.son[2];
+
+		myear = x.myear;
+		myue = x.myue;
+		year1 = x.year1;
+		yue1 = x.yue1;
+		year2 = x.year2;
+		yue2 = x.yue2;
+
+		_1year = x._1year;
+		_1eyear = x._1eyear;
+		_1yue = x._1yue;
+		_1eyue = x._1eyue;
+
+		_2year = x._2year;
+		_2eyear = x._2eyear;
+		_2yue = x._2yue;
+		_2eyue = x._2eyue;
+
+		_3year = x._3year;
+		_3eyear = x._3eyear;
+		_3yue = x._3yue;
+		_3eyue = x._3eyue;
+
+	}
+	void show() {
+		cout << "id: "; cout << id << "\n";
+		cout << "姓名： "; cout << name << "\n";
+		printf("产假期 %d.%d\n", myear, myue);
+		printf("子女1姓名: "); cout << son[1] << "\n";
+		if (son[1] != "无") printf("输入子女1出生日期 %d.%d\n", year1, yue1);
+		printf("子女2姓名: "); cout << son[2] << "\n";
+		if (son[2] != "无") printf("输入子女2出生日期 %d.%d\n", year2, yue2);
+
+		printf("奶补贴 %d.%d ---- %d.%d\n", _1year, _1yue, _1eyear, _1eyue);
+		printf("幼儿补贴 %d.%d ---- %d.%d\n", _2year, _2yue, _2eyear, _2eyue);
+		printf("奖励补贴 %d.%d ---- %d.%d\n", _3year, _3yue, _3eyear, _3eyue);
+
+	}
+	void change() {
+		while (1) {
+			system("cls");
+			printf("0: 退出\n");
+			printf("1: 修改职员id\n");
+			printf("2: 修改职员姓名\n");
+
+			int op; cin >> op;
+
+			if (!op) break;
+			if (op == 1) {
+				cout << "输入编号: "; cin >> id;
+			}
+			if (op == 2) {
+				cout << "输入姓名: "; cin >> name;
+			}
+			
+			system("pause");
+		}
+	}
+	void add() {
+		int num = 0;
+
+		cout << "输入id： "; cin >> id;
+		cout << "输入姓名： "; cin >> name;
+		cout << "输入产假期： "; scanf("%d.%d", &myear, &myue);
+		cout << "输入子女1姓名： "; cin >> son[1];
+		if (son[1] != "无") {
+			cout << "输入子女1出生日期： "; scanf("%d.%d", &year1, &yue1);
+			num++;
+		}
+		cout << "输入子女2姓名： "; cin >> son[2];
+		if (son[2] != "无") {
+			cout << "输入子女2出生日期： "; scanf("%d.%d", &year1, &yue1);
+			num++;
+		}
+		// 2020.02
+
+		if (num == 1) {
+			int age = ((year * 12 + yue) - (year1 * 12 + yue1)) / 12;
+			if (age <= 2) {
+				_1year = year1;
+				_1yue = yue1;
+				_1eyear = year1 + 2;
+				_1eyue = yue1;
+			}
+			else {
+				_1year = 0;
+				_1yue = 0;
+				_1eyear = 0;
+				_1eyue = 0;
+			}
+
+
+			if (age > 2 && age <= 6) {
+				_2year = year1;
+				_2yue = yue1;
+				_2eyear = year1 + 6;
+				_2eyue = yue1;
+			}
+			else {
+				_2year = _2yue = _2eyear = _2eyue = 0;
+			}
+
+			int cjia = ((year * 12 + yue) - (myear * 12 + myue));
+			if (cjia <= 3 && age <= 18) {
+				_3year = myear;
+				_3yue = myue;
+				_3eyear = myear + 18;
+				_3eyue = myue;
+			}
+			else {
+				_3year = _3yue = _3eyear = _3eyue = 0;
+			}
+
+			if (cjia > 3 && age <= 15) {
+				_3year = myear;
+				_3yue = myue;
+				_3eyear = myear + 15;
+				_3eyue = myue;
+			}
+			else {
+				_3year = _3yue = _3eyear = _3eyue = 0;
+			}
+
+		}
+	}
+}a[1000006];
+
+int cmp(Worker x, Worker y) {
+	return x.name < y.name;
+}
+
+int main()
+{
+	int tot = 0;
+	cout << "请输入当前时间（xxxx.xx）"; 
+	scanf("%d.%d", &year, &yue);
+
+
+
+	while (1) {
+
+		printf("0: 退出\n");
+		printf("1: 显示职工信息\n");
+		printf("2: 增加职工信息\n");
+		printf("3: 删除职工信息\n");
+		printf("4: 修改职工信息\n");
+		printf("5: 按编号查询职工补助信息\n");
+		printf("6: 按姓名查询职工补助信息\n");
+		printf("7: 职工姓名按字典顺序输出职工的基本信息和享受补信息\n");
+		int op; cin >> op;
+
+		if (op == 0) { break; }
+		if (op == 1) {
+			for (int i = 1; i <= tot; i++) a[i].show();
+		}
+		if (op == 2) {
+			a[++tot].add();
+		}
+		if (op == 3) {
+			printf("请输入要删除的职员名称： ");
+			int f = 0;
+			string name; cin >> name;
+			for (int i = 1; i <= tot; i++) {
+				if (name == a[i].name) {
+					f = 1;
+					for (int j = i + 1; j <= tot; j++) {
+						a[j - 1] = a[j];
+					}
+					tot--;
+					break;
+				}
+			}
+			if (!f) cout << "未找到信息\n";
+		}
+		if (op == 4) {
+			printf("请输入要修改的职员名称： ");
+			int f = 0;
+			string name; cin >> name;
+			for (int i = 1; i <= tot; i++) {
+				if (name == a[i].name) {
+					a[i].change();
+					f = 1;
+				}
+			}
+			if (!f) cout << "未找到信息\n";
+		}
+		if (op == 5) {
+			printf("请输入要查找的职员id： ");
+			int f = 0;
+			string name; cin >> name;
+			for (int i = 1; i <= tot; i++) {
+				if (name == a[i].id) {
+					a[i].show();
+					f = 1;
+					break;
+				}
+			}
+			if (!f) cout << "未找到信息\n";
+		}
+		if (op == 6) {
+			printf("请输入要查找的职员名称： ");
+			int f = 0;
+			string name; cin >> name;
+			for (int i = 1; i <= tot; i++) {
+				if (name == a[i].name) {
+					a[i].show();
+					f = 1;
+					break;
+				}
+			}
+			if (!f) cout << "未找到信息\n";
+		}
+		if (op == 7) {
+			sort(a + 1, a + 1 + tot, cmp);
+			for (int i = 1; i <= tot; i++) {
+				a[i].show();
+			}
+		}
+		system("pause");
+		system("cls");
+	}
+	return 0;
+}

@@ -1,0 +1,309 @@
+#include<graphics.h>
+#include<mmsystem.h>
+#include<conio.h>
+#include<time.h>
+#include<stdlib.h>
+#include<stdio.h>
+#include<math.h>
+#pragma comment(lib,"winmm.lib")
+#define MAXSTAR 1000
+
+//窗口宽高
+const int WIDTH = 750;
+const int HEIGHT = 600;
+
+struct STAR
+{
+	double x;
+	int y;
+	double step;
+	int color;
+};
+STAR star[MAXSTAR];
+
+//音乐
+void MYmusic();
+// 欢迎界面
+void welcome();
+//背景图 
+void bkpicture();
+// 退出界面
+void goodbye();
+// 实现闪烁的“按任意键继续”  可以 用作暂停
+void ifget();
+
+void illustrate();
+void mygame1();
+
+// 移动星星
+void InitStar(int i)
+{
+	star[i].x = 0;
+	star[i].y = rand() % 810;
+	star[i].step = (rand() % 5000) / 1000.0 + 1;
+	star[i].color = (int)(star[i].step * 255 / 6.0 + 0.5);	// 速度越快，颜色越亮
+	star[i].color = RGB(star[i].color, star[i].color, star[i].color);
+}
+
+void MoveStar(int i)
+{
+	// 擦掉原来的星星
+	putpixel((int)star[i].x, star[i].y, 0);
+	// 计算新位置
+	star[i].x += star[i].step;
+	if (star[i].x > 810)
+		InitStar(i);
+	// 画新星星
+	putpixel((int)star[i].x, star[i].y, star[i].color);
+}
+
+// 退出界面
+void goodbye()
+{
+	/*closegraph();
+	initgraph(WIDTH + 50, HEIGHT);*/
+	cleardevice();
+	setbkcolor(BLACK);
+	cleardevice();
+	int c = 0;
+	//用来变色
+	int d = 8;
+	// 初始化所有星星
+	for (int i = 0; i < MAXSTAR; i++)
+	{
+		InitStar(i);
+		star[i].x = rand() % 640;
+	}
+	//没有按下0，按下非0 //实现闪烁
+	while (!_kbhit())
+	{
+		// 绘制星空，按任意键退出
+		for (int i = 0; i < MAXSTAR; i++)
+			MoveStar(i);
+		settextcolor(YELLOW);
+		settextstyle(48, 0, _T("黑体"));
+		outtextxy(104, 180, _T("   要多练打字"));
+		settextcolor(RGB(100, c, c));
+		outtextxy(280, 400, _T("再见"));
+		c += d;
+		if (c < 8 || c>245)
+			d = -d; //实现闪烁
+		Sleep(60);//延时20ms
+	}
+
+
+	_getch();
+}
+
+// 欢迎界面
+void welcome()
+{
+	// 输出屏幕提示
+
+	cleardevice();
+	bkpicture();
+	setbkcolor(WHITE);
+	setbkmode(TRANSPARENT);
+
+	settextcolor(YELLOW);
+	settextstyle(64, 0, _T("黑体"));
+	outtextxy(280, 50, _T("练字app"));
+
+	settextcolor(RED);
+	settextstyle(50, 0, _T("黑体"));
+	outtextxy(300, 200, _T("开始游戏"));
+	settextcolor(LIGHTGRAY);
+	outtextxy(700, 550, "退出");
+
+	MOUSEMSG m;
+
+	while (1)
+	{
+
+		setlinestyle(0, 3, 0, 0);
+
+		m = GetMouseMsg();
+		if (m.x > 300 && m.x < 500 && m.y>200 && m.y < 250)
+		{
+
+			setlinecolor(WHITE);
+			rectangle(298, 198, 502, 252);
+			if (m.uMsg == WM_LBUTTONDOWN)
+			{
+				mygame1();
+			}
+		}
+
+		else if (m.x > 700 && m.x < 800 && m.y>550 && m.y < 600)
+		{
+
+			setlinecolor(WHITE);
+			rectangle(700, 548, 800, 600);
+			if (m.uMsg == WM_LBUTTONDOWN)
+			{
+				goodbye();
+			}
+		}
+		else
+		{
+			setlinecolor(BLACK);
+			rectangle(700, 548, 800, 600);
+
+		}
+
+	}
+
+}
+
+//操作说明
+void illustrate()
+{
+	cleardevice();
+	bkpicture();
+	settextcolor(YELLOW);
+	settextstyle(30, 0, _T("黑体"));
+	outtextxy(300, 50, _T("输入对应字母消除"));
+	outtextxy(300, 100, _T("输入正确加速"));
+	outtextxy(300, 150, _T("输入错误减速"));
+	outtextxy(300, 200, _T("按空格暂停，任意键继续"));
+	outtextxy(300, 250, _T("游戏界面输入数字0重选难度"));
+	ifget();
+}
+
+// 实现闪烁的“按任意键继续”
+void ifget()
+{
+
+	int c = 255;
+	settextstyle(30, 0, _T("黑体"));
+	while (!_kbhit())
+	{
+		settextcolor(RGB(c, 0, 0));
+		outtextxy(330, 500, _T("按任意键继续"));
+		c -= 8;
+		if (c < 50) c = 255;
+		Sleep(3);
+	}
+	_getch();
+}
+
+//音乐
+void MYmusic()
+{
+	mciSendString("open  my.mp3", 0, 0, 0);
+	mciSendString("play my.mp3 repeat", 0, 0, 0);
+}
+
+//背景图 
+void bkpicture()
+{
+	IMAGE imagebk;
+	setbkmode(TRANSPARENT);
+	loadimage(&imagebk, "bk.jpg", 800, 600);
+	putimage(0, 0, &imagebk);
+}
+
+//游戏界面 
+void mygame1()
+{
+	illustrate();
+	cleardevice();
+	bkpicture();
+
+	IMAGE imagebk;
+	loadimage(&imagebk, "bk.jpg", 800, 600);
+	IMAGE LB1;
+	loadimage(&LB1, "hlb.jpg", 50, 50);
+	srand((unsigned int)time(NULL));
+
+	int x, y;
+	//分数
+	int score = 0;
+	char s[1000];
+	//_itoa_s(score, s, 10);
+	sprintf(s, "%d", score);
+	//速度
+	int speed = 5;
+	//掉落字符
+	char fang;
+	//键盘输入
+	int key;
+	while (1)
+	{
+		fang = 65 + rand() % 26;  //随机产生字符
+		x = 10 + rand() % 770; //从10-780
+
+		for (y = 0; y < 600; y++)			//从上到下掉落
+		{
+			BeginBatchDraw();				//预加载  防止闪耀 
+
+			putimage(0, 0, &imagebk);		//背景 
+			putimage(x, y, &LB1, SRCAND);
+			setbkmode(TRANSPARENT);
+
+			settextstyle(20, 0, "黑体");		//字跟图一起掉下来
+			settextcolor(BLACK);
+			outtextxy(x + 15, y + 40, fang);
+
+			settextcolor(RED);
+			outtextxy(700, 580, "score:");
+
+			outtextxy(770, 580, s);
+
+			if (_kbhit())
+			{
+				key = _getch();
+				if (key == fang || key == fang + 32)
+				{
+					score++;					//分数加
+					//_itoa_s(score, s, 10);		//转换分数
+					sprintf(s, "%d", score);
+					speed--;					//速度加
+					if (speed < 1)
+						speed = 1;
+					break;
+				}
+				else if (key == ' ')
+				{
+					_getch();
+				}
+				else if (key == 27)
+				{
+					EndBatchDraw();
+					goodbye();
+
+					exit(0);
+				}
+				else if (key == '0')
+				{
+					EndBatchDraw();
+					welcome();
+				}
+				else
+				{
+					if (speed > 20)
+						speed = 20;
+					speed += 3;
+				}
+			}
+			Sleep(speed);
+			EndBatchDraw();
+		}
+	}
+}
+
+int main()
+{
+	initgraph(WIDTH + 50, HEIGHT);
+	// 获取绘图窗口句柄(HWND)
+	HWND hwnd = GetHWnd();
+
+	//使用 Windows API 修改窗口名称
+	SetWindowText(hwnd, "打字");
+	MYmusic();
+
+	// 开始界面
+	welcome();
+	closegraph();
+	return 0;
+}

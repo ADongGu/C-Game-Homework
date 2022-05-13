@@ -1,0 +1,345 @@
+#include<stdio.h>
+#include<string.h>
+
+
+typedef struct Manage 
+{
+	int id;
+	int password;
+}manage;
+
+typedef struct Student 
+{
+	int id;
+	int password;
+
+	int call;
+	char name[20];
+	char pos[100];
+
+	int jiankan;
+	int hesuan;
+	int yimiao;
+	int lixiao;
+}student;
+
+
+manage man[100005];
+student stu[100005];
+
+int man_cnt, stu_cnt;
+
+void show(int i) 
+{
+	printf("请输入学生账号：%d\n", stu[i].id);
+	printf("请输入学生密码：%d\n", stu[i].password);
+	printf("请输入学生联系方式：%d\n", stu[i].call);
+	printf("请输入学生地址：%s\n", stu[i].pos);
+	printf("请输入学生姓名：%s\n", stu[i].name);
+}
+
+void man_login() 
+{
+	while (1) 
+	{
+		system("cls");
+
+		printf("0: 退出\n");
+		printf("1: 添加学生\n");
+		printf("2: 删除学生\n");
+		printf("3: 查看有哪些学生有每日健康记录\n");
+		printf("4: 查看有哪些学生有核酸检测记录\n");
+		printf("5: 查看有哪些学生有疫苗接种记录\n");
+		printf("6: 查看有哪些学生有离校申请\n");
+		printf("7: 有多少核酸次数 < 5\n");
+		printf("8: 有多少接种疫苗 < 2\n");
+		printf("9: 有多少离校申请 > 3\n");
+		printf("10: 批假\n");
+		int op; scanf("%d", &op);
+
+		if (op == 0) 
+		{ 
+			return; 
+		}
+		if (op == 1) 
+		{
+			printf("请输入学生账号：");			scanf("%d", &stu[++stu_cnt].id);
+			printf("请输入学生密码：");			scanf("%d", &stu[stu_cnt].password);
+			printf("请输入学生联系方式：");		scanf("%d", &stu[stu_cnt].call);
+			printf("请输入学生地址：");			scanf("%s", stu[stu_cnt].pos);
+			printf("请输入学生姓名：");			scanf("%s", stu[stu_cnt].name);
+			stu[stu_cnt].lixiao = -1;
+		}
+		if (op == 2) 
+		{
+			int f = 0;
+			printf("请输入要删除的学生姓名\n");
+			char name[30]; scanf("%s", name);
+			for (int i = 1; i <= stu_cnt; i++) 
+			{
+				if (strcmp(stu[i].name, name) == 0) 
+				{
+					f = 1;
+					for (int j = i + 1; j <= stu_cnt; j++) 
+					{
+						stu[j - 1].id = stu[j].id;
+						stu[j - 1].password = stu[j].password;
+						stu[j - 1].call = stu[j].call;
+
+						stu[j - 1].jiankan = stu[j].jiankan;
+						stu[j - 1].lixiao = stu[j].lixiao;
+						stu[j - 1].hesuan = stu[j].hesuan;
+						stu[j - 1].yimiao = stu[j].yimiao;
+
+						strcpy(stu[j - 1].name, stu[j].name);
+						strcpy(stu[j - 1].pos, stu[j].pos);
+					}
+					stu_cnt--;
+					break;
+				}
+			}
+			if (!f) printf("没有学生信息\n");
+		}
+		if (op == 3) 
+		{
+			for (int i = 1; i <= stu_cnt; i++) 
+			{
+				if (stu[i].jiankan) 
+				{
+					show(i);
+					printf("健康记录次数：%d\n\n", stu[i].jiankan);
+				}
+			}
+		}
+		if (op == 4) 
+		{
+			for (int i = 1; i <= stu_cnt; i++) 
+			{
+				if (stu[i].hesuan) 
+				{
+					show(i);
+					printf("核酸检测次数：%d\n\n", stu[i].hesuan);
+				}
+			}
+		}
+		if (op == 5) 
+		{
+			for (int i = 1; i <= stu_cnt; i++) 
+			{
+				if (stu[i].yimiao) 
+				{
+					show(i);
+					printf("疫苗接种次数：%d\n\n", stu[i].yimiao);
+				}
+			}
+		}
+		if (op == 6) 
+		{
+			for (int i = 1; i <= stu_cnt; i++) 
+			{
+				if (stu[i].lixiao == 0) 
+				{
+					show(i);
+				}
+			}
+		}
+		if (op == 7) 
+		{
+			int sum = 0;
+			for (int i = 1; i <= stu_cnt; i++) 
+			{
+				sum += stu[i].hesuan;
+			}
+			printf("总共有%d次核酸记录\n", sum);
+		}
+		if (op == 8) 
+		{
+			int sum = 0;
+			for (int i = 1; i <= stu_cnt; i++) 
+			{
+				sum += stu[i].yimiao;
+			}
+			printf("总共有%d次接种疫苗记录\n", sum);
+		}
+		if (op == 9) 
+		{
+			int sum = 0;
+			for (int i = 1; i <= stu_cnt; i++) 
+			{
+				if (stu[i].lixiao == 1)
+					sum += stu[i].lixiao;
+			}
+			printf("总共有%d次离校记录\n", sum);
+		}
+		if (op == 10) 
+		{
+			for (int i = 1; i <= stu_cnt; i++) 
+			{
+				if (stu[i].lixiao == 0) 
+				{
+					printf("是否批假(1 批准，0 不同意)\n");
+					scanf("%d", &stu[i].lixiao);
+				}
+			}
+		}
+
+		system("pause");
+	}
+
+}
+
+void stu_login(int POS) 
+{
+	while (1) 
+	{
+		system("cls");
+
+		printf("0: 退出\n");
+		printf("1: 修改密码\n");
+		printf("2: 修改账号\n");
+		printf("3: 修改地址\n");
+		printf("4: 修改联系方式\n");
+		printf("5: 填每日健康\n");
+		printf("6: 填核酸记录\n");
+		printf("7: 填疫苗接种情况\n");
+		printf("8: 申请离校\n");
+
+		char name[30];
+		int op; scanf("%d", &op);
+		if (op == 0) 
+		{
+			return; 
+		}
+		if (op == 1) 
+		{
+			printf("请重新输入密码: "); scanf("%d", &stu[POS].password);
+		}
+		if (op == 2) 
+		{
+			printf("请重新输入账号: "); scanf("%d", &stu[POS].id);
+		}
+		if (op == 3) 
+		{
+			printf("请重新输入地址: "); scanf("%s", stu[POS].pos);
+		}
+		if (op == 4) 
+		{
+			printf("请重新输入密码: "); scanf("%d", &stu[POS].call);
+		}
+		if (op == 5) 
+		{
+			stu[POS].jiankan++;
+		}
+		if (op == 6) 
+		{
+			stu[POS].hesuan++;
+		}
+		if (op == 7) 
+		{
+			stu[POS].yimiao++;
+		}
+		if (op == 8) 
+		{
+			stu[POS].lixiao = 0;
+		}
+
+
+
+		system("pause");
+	}
+}
+
+int main()
+{
+	while (1) 
+	{
+
+		int id, password;
+
+		printf("0: 退出\n");
+		printf("1: 管理员权限\n");
+		printf("2: 学生权限\n");
+		printf("3: 新增管理员\n");
+		printf("4: 查看所有管理员\n");
+		printf("5: 查看所有学生\n");
+
+		int op; scanf("%d", &op);
+		if (op == 0) 
+		{
+			break; 
+		}
+		if (op == 1) 
+		{
+			printf("请输入登陆账号\n"); scanf("%d", &id);
+			printf("请输入登陆密码\n"); scanf("%d", &password);
+
+			int f = 0;
+			for (int i = 1; i <= man_cnt; i++) 
+			{
+				if (man[i].id == id && man[i].password == password) 
+				{
+					f = 1;
+					printf("登陆成功\n");
+					man_login();
+				}
+			}
+			if (!f) printf("请重新登陆\n");
+		}
+		if (op == 2) 
+		{
+			printf("请输入登陆账号\n"); scanf("%d", &id);
+			printf("请输入登陆密码\n"); scanf("%d", &password);
+
+			int f = 0;
+			for (int i = 1; i <= man_cnt; i++) 
+			{
+				if (stu[i].id == id && stu[i].password == password) 
+				{
+					f = 1;
+					printf("登陆成功\n");
+					stu_login(i);
+				}
+			}
+			if (!f) printf("请重新登陆\n");
+		}
+		if (op == 3) 
+		{
+			printf("请输入登陆账号\n"); scanf("%d", &man[++man_cnt].id);
+			printf("请输入登陆密码\n"); scanf("%d", &man[man_cnt].password);
+		}
+		if (op == 4) 
+		{
+			for (int i = 1; i <= man_cnt; i++) 
+			{
+				printf("id: %d\n", man[i].id);
+				printf("密码: %d\n\n", man[i].password);
+			}
+		}
+		if (op == 5) 
+		{
+			for (int i = 1; i <= stu_cnt; i++) 
+			{
+				show(i);
+				printf("每日健康次数：%d\n",stu[i].jiankan);
+				printf("疫苗次数：%d\n",stu[i].yimiao);
+				printf("核酸检测次数：%d\n\n",stu[i].hesuan);
+			}
+		}
+
+		system("pause");
+		system("cls");
+	}
+
+	FILE* file;
+	file = fopen("info.txt", "w");
+	for (int i = 1; i <= man_cnt; i++) {
+		fprintf(file, "%d\t%d\n", man[i].id, man[i].password);
+	}
+	fclose(file);
+
+	file = fopen("stu_info.txt", "w");
+	for (int i = 1; i <= stu_cnt; i++)
+		fprintf(file, "%d\t%d\t%d\t%s\t%s\n", stu[i].id, stu[i].password, stu[i].call, stu[i].pos, stu[i].name);
+	fclose(file);
+	return 0;
+}

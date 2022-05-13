@@ -1,0 +1,124 @@
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include <time.h>
+#include <Windows.h>
+
+struct Word {
+	char zh[30];
+	char eng[30];
+}word[45];
+
+int op;
+int tot;
+int i, j;
+int f;
+char name[30] = "";
+
+void fun()
+{
+	int pos;
+	int num = 0;
+	int cnt = 0;
+	double pass = 0;
+
+	while (1) {
+		pos = (rand() % 20) + 1;
+
+		printf("%s的中文单词是什么:   ", word[pos].eng);
+		gets(name);
+		if (strcmp(name, word[pos].zh) == 0) {
+			num++;
+			printf("回答正确\n");
+		}
+		cnt++;
+		if (num >= 10 && (num * 1.0 / cnt) >= 0.8) {
+			break;
+		}
+		else if (cnt >= 20) {
+			printf("再接再厉， 重新进入学校界面....\n");
+			return;
+		}
+	}
+
+	pass = num * 1.0 / cnt;
+	num = cnt = 0;
+	printf("第一阶段完成， 开始下一关\n\n");
+
+	while (1) {
+		pos = (rand() % 20) + 21;
+		printf("%s的中文单词是什么:   ", word[pos].eng);
+		gets(name);
+		if (strcmp(name, word[pos].zh) == 0) {
+			num++;
+			printf("回答正确\n");
+		}
+		cnt++;
+		if (num >= 10 && ((num * 1.0 / cnt) + pass) / 2 >= 0.9) {
+			printf("学神啊~\n");
+			return;
+		}
+		else if (num >= 10 && ((num * 1.0 / cnt) + pass) / 2 >= 0.8) {
+			printf("成绩良好啊~\n");
+			return;
+		}
+		else if (cnt >= 20) {
+			printf("再接再厉， 重新进入学校界面....\n");
+			return;
+		}
+	}
+
+}
+
+int main()
+{
+	srand(time(NULL));
+	printf("开始建立词库.....\n\n");
+
+
+	for (i = 1; i <= 20; i++) {
+		printf("请输入第一阶段第%d个英文单词： ", i); scanf("%s", word[i].eng);
+		printf("请输入第一阶段第%d个中文单词： ", i); scanf("%s", word[i].zh);
+	}
+	getchar();
+
+	for (i = 21; i <= 40; i++) {
+		printf("请输入第二阶段第%d个英文单词： ", i); gets(word[i].eng);
+		printf("请输入第二阶段第%d个中文单词： ", i); gets(word[i].zh);
+	}
+
+	system("pause");
+	system("cls");
+
+	while (1)
+	{
+		printf("0: 退出程序\n");
+		printf("1： 修改单词\n");
+		printf("2： 开始学习\n");
+
+		scanf("%d", &op);
+		getchar();
+		if (!op) break;
+		if (op == 1) {
+			f = 0;
+			printf("要改哪个英文单词："); gets(name);
+
+			for (i = 1; i <= 4; i++)
+			{
+				if (strcmp(word[i].eng, name) == 0) {
+					printf("请输入新的英文单词："); gets(word[i].eng);
+					printf("请输入新的中文意思："); gets(word[i].zh);
+					f = 1;
+					break;
+				}
+			}
+			if (!f) printf("没有该单词信息\n");
+		}
+		if (op == 2) {
+			fun();
+		}
+		system("pause");
+		system("cls");
+	}
+	return 0;
+}

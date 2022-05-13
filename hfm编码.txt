@@ -1,0 +1,79 @@
+#include <iostream>
+#include <cstdio>
+using namespace std;
+struct myNode
+{
+	int p, l, r;
+	char c;
+	int data;
+};
+
+int sum = 0;
+void createTree(myNode p[], int n, int total)
+{
+	for (int i = 0; i < total; i++)  //初始化
+		p[i].p = p[i].l = p[i].r = -1;
+
+	for (int i = n; i < total; i++)
+	{
+		int min1, min2, l, r;   //最大值和第二大值
+		min1 = min2 = 1e9;
+		l = r = -1;
+
+
+		for (int t = 0; t < i; ++t)   //遍历寻找两个最小的点,也就是data值最小的
+		{
+			if (p[t].p == -1)
+			{
+				if (p[t].data < min1)
+				{
+					r = l;
+					l = t;
+					min2 = min1;
+					min1 = p[t].data;
+				}
+				else if (p[t].data < min2) {
+					r = t;
+					min2 = p[t].data;
+				}
+			}
+		}
+		p[i].data = min1 + min2;
+
+		sum += p[i].data;
+		p[l].p = p[r].p = i;
+		p[i].l = l;
+		p[i].r = r;
+	}
+}
+
+myNode p[100005];
+
+void prin(int now, char t, string s) {
+	if (t == p[now].c) {
+		cout << s << endl;
+		return;
+	}
+	if (p[now].l != -1)
+		prin(p[now].l, t, s + '0');
+	if (p[now].r != -1)
+		prin(p[now].r, t, s + '1');
+}
+
+const char aa[] = "ABCDEFGHIJ";
+int av[10] = { 19,18,14,12,8,6,4,2,1 };
+
+int main()
+{
+
+	for (int i = 0; i < 10; i++) {
+		p[i].c = aa[i];
+		p[i].data = av[i];
+	}
+	createTree(p, 10, 2 * 10 - 1);
+	for (int i = 0; i < 10; i++) {
+		cout << aa[i] << ": ";
+		prin(18, aa[i], "");
+	}
+	return 0;
+}

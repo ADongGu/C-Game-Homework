@@ -1,0 +1,97 @@
+#include<graphics.h>
+#include<mmsystem.h>
+#include<conio.h>
+#include<time.h>
+#include<stdlib.h>
+#include<stdio.h>
+#include<math.h>
+#pragma comment(lib,"winmm.lib")
+#define MAXSTAR 1000
+
+//窗口宽高
+const int WIDTH = 500;
+const int HEIGHT = 500;
+
+int n, m;
+int mp[100][100];
+
+
+// 游戏
+int nowx, nowy;
+int High = 25, Width = 25;
+void draw()
+{
+	outtextxy(400, 5, "W: 上");
+	outtextxy(400, 20, "S: 下");
+	outtextxy(400, 40, "A: 左");
+	outtextxy(400, 60, "Y: 右");
+	for (int i = 1; i <= n; i++)
+		for (int j = 1; j <= m; j++)
+		{
+			if ( mp[i][j] == 0)  setfillcolor(0x228B22);	// 没走过， 0
+			if ( mp[i][j] == 1)  setfillcolor(0xA0522D);	// 没走过 1 障碍
+			if (i == nowx && j == nowy) setfillcolor(RED);
+			// zuo shang --- you xia
+			solidrectangle(j * (Width - 2), i * (High - 2),
+				(j + 1) * (Width - 2), (i + 1) * (High - 2));
+		}
+}
+void game()
+{
+	IMAGE yxb;
+	loadimage(&yxb, "yxb.jpg", WIDTH, HEIGHT);
+
+	FILE* file;
+	file = fopen("ditu.txt", "r");
+
+	fscanf(file, "%d%d", &n, &m);
+	for (int i = 1; i <= n; i++) 
+		for (int j = 1; j <= m; j++)
+			fscanf(file, "%d", &mp[i][j]);
+	
+	fclose(file);
+	nowx = nowy = 1;
+	draw();
+
+	while (1)
+	{
+		if (kbhit())   // 1 : you
+		{
+			char key = _getch();
+			if (key == 'W') {
+				if (!mp[nowx-1][nowy])	nowx--;
+				if (nowx <= 0)nowx = 1;
+			}
+			if (key == 'D') {
+				if (!mp[nowx][nowy+1])nowy++;
+				if (nowy >= m) nowy = m;
+			}
+			if (key == 'S') {
+				if (!mp[nowx + 1][nowy])nowx++;
+				if (nowx >= n) nowx = n;
+			}
+			if (key == 'A') {
+				if (!mp[nowx][nowy - 1])nowy--;
+				if (nowy <= 0) nowy = 1;
+			}
+		}
+		draw();
+		if (nowx == n && nowy == m) break;
+		Sleep(200);
+	}
+}
+
+void main()
+{
+	initgraph(WIDTH, HEIGHT);
+	//setbkcolor(WHITE);
+	IMAGE bk;
+	loadimage(&bk, "yxb.jpg", 1000, 500);
+	//putimage(0, 0, &bk);
+	
+	game();
+	closegraph();
+}
+
+
+

@@ -1,0 +1,254 @@
+
+#include <iostream>
+#include <algorithm>
+#include <fstream>
+#include <string>
+#include <Windows.h>
+using namespace std;
+
+
+class STUDENT {
+public:
+	string id, name;
+	double ch, en, ma, pys, hua, shen, sum;
+	double qm, ps;
+
+
+	void input() {
+		cout << "请输入学号："; cin >> id;
+		cout << "请输入姓名："; cin >> name;
+		cout << "请输入语文成绩："; cin >> ch;
+		cout << "请输入数学成绩："; cin >> en;
+		cout << "请输入英语成绩："; cin >> ma;
+		cout << "请输入物理成绩："; cin >> pys;
+		cout << "请输入化学成绩："; cin >> hua;
+		cout << "请输入生物成绩："; cin >> shen;
+		cout << "请输入期末成绩："; cin >> qm;
+		cout << "请输入平时成绩："; cin >> ps;
+		sum = ps * 0.3 + qm * 0.7;
+	}
+
+	void show() {
+		cout << "学号："; cout << id << endl;
+		cout << "姓名："; cout << name << endl;
+		cout << "语文成绩："; cout << ch << endl;
+		cout << "数学成绩："; cout << en << endl;
+		cout << "英语成绩："; cout << ma << endl;
+		cout << "物理成绩："; cout << pys << endl;
+		cout << "化学成绩："; cout << hua << endl;
+		cout << "生物成绩："; cout << shen << endl;
+		cout << "期末成绩："; cout << qm << endl;
+		cout << "平时成绩："; cout << ps << endl;
+		cout << "总评成绩："; cout << ps << endl;
+	}
+
+};
+
+class TEACHER {
+public:
+	string id, name;
+
+	void input() {
+		cout << "请输入教师id："; cin >> id;
+		cout << "请输入教师姓名："; cin >> name;
+	}
+};
+
+int tot;
+STUDENT stu[100005];
+
+int tea_cnt;
+TEACHER tea[100005];
+
+
+void find() {
+	printf("请输入查找学号：");
+	string id; cin >> id;
+	int flag = 0;
+	for (int i = 1; i <= tot; i++) {
+		if (id == stu[i].id) {
+			flag = 1;
+			stu[i].show();
+			break;
+		}
+	}
+	if (!flag) printf("没有这个信息");
+}
+
+void del() {
+	printf("请输入删除的学号：");
+	string id; cin >> id;
+	int flag = 0;
+	for (int i = 1; i <= tot; i++) {
+		if (id == stu[i].id) {
+			flag = 1;
+			for (int j = i + 1; j <= tot; j++) {
+				stu[j - 1] = stu[j];
+			}
+			break;
+		}
+	}
+
+	tot--;
+	if (!flag) printf("没有找到");
+}
+
+void change() {
+	printf("请输入修改的学号：");
+	string id; cin >> id;
+	int flag = 0;
+
+	for (int i = 1; i <= tot; i++) {
+		if (id == stu[i].id) {
+			flag = 1;
+			printf("1: 修改语文\n");
+			printf("2: 修改数学\n");
+			printf("3: 修改英语\n");
+			printf("4: 修改生物\n");
+			printf("5: 修改化学\n");
+			printf("6: 修改物理\n");
+			printf("7: 修改期末成绩\n");
+			printf("8: 修改平时成绩\n");
+			int op; cin >> op;
+			if (op == 1) { cin >> stu[i].ch; }
+			if (op == 2) { cin >> stu[i].ma; }
+			if (op == 3) { cin >> stu[i].en; }
+			if (op == 4) { cin >> stu[i].shen; }
+			if (op == 5) { cin >> stu[i].hua; }
+			if (op ==6) { cin >> stu[i].pys; }
+			if (op == 7) { cin >> stu[i].qm; }
+			if (op == 8) { cin >> stu[i].ps; }
+			break;
+		}
+	}
+	if (!flag) printf("没有这个信息");
+}
+
+void login() {
+	string password;
+	printf("请输入密码");
+	cin >> password;
+}
+
+void Tea(){
+	while (1) {
+		printf("1： 录入\n");
+		printf("2： 查询\n");
+		printf("3： 修改\n");
+		printf("4： 删除\n");
+		printf("5： 保存\n");
+		printf("6： 退出\n");
+
+		int op; cin >> op;
+		if (op == 1) {
+			stu[++tot].input();
+		}
+		if (op == 2) {
+			find();
+		}
+		if (op == 3) {
+			change();
+		}
+		if (op == 4) {
+			del();
+		}
+		if (op == 5) {
+			string banji, kecheng;
+			cout << "班级号";
+			cout << "课程";
+			cin >> banji >> kecheng;
+			string c = "c";
+			string d = ".txt";
+			c += banji;
+			c += kecheng;
+			c += d;
+
+			fstream file;
+			file.open(c, ios::out);
+			for (int i = 1; i <= tot; i++) {
+				if (kecheng == "语文") {
+					file << stu[i].id << " " << stu[i].name << " " << stu[i].ch << "\n";
+				}
+				if (kecheng == "数学") {
+					file << stu[i].id << " " << stu[i].name << " " << stu[i].ma << "\n";
+				}
+				if (kecheng == "英语") {
+					file << stu[i].id << " " << stu[i].name << " " << stu[i].en << "\n";
+				}
+				if (kecheng == "生物") {
+					file << stu[i].id << " " << stu[i].name << " " << stu[i].shen << "\n";
+				}
+				if (kecheng == "物理") {
+					file << stu[i].id << " " << stu[i].name << " " << stu[i].pys << "\n";
+				}
+				if (kecheng == "化学") {
+					file << stu[i].id << " " << stu[i].name << " " << stu[i].hua << "\n";
+				}
+			}
+			file.close();
+		}
+		if (op == 6) { break; }
+		system("pause");
+		system("cls");
+	}
+}
+
+void Man() {
+	printf("1: 添加教师\n");
+	printf("2: 删除教师\n");
+	printf("3: 查询所有老师信息\n");
+	printf("4: 查询所有学生信息\n");
+	printf("5: 退出\n");
+	int op; cin >> op;
+	if (op == 1) { tea[++tea_cnt].input(); }
+	if (op == 2) {
+		printf("请输入删除的教师id：");
+		string id; cin >> id;
+		int flag = 0;
+		for (int i = 1; i <= tea_cnt; i++) {
+
+			if (id == tea[i].id) {
+				flag = 1;
+				for (int j = i + 1; j <= tea_cnt; j++) {
+					tea[j - 1] = tea[j];
+				}
+				break;
+			}
+		}
+		tea_cnt--;
+		if (!flag) printf("没有这个信息");
+	}
+	if (op == 3) {
+		for (int i = 1; i <= tea_cnt; i++) {
+			printf("教师号： "); cout << tea[i].id << endl;
+			printf("教师姓名： "); cout << tea[i].name << endl;
+		}
+	}
+	if (op == 4) {
+		for (int i = 1; i <= tot; i++) {
+			stu[i].show();
+		}
+	}
+	if (op == 5) { return; }
+}
+
+int main()
+{
+	while (1) {
+		printf("1: 管理员\n");
+		printf("2: 老师\n");
+		printf("3: 退出\n");
+
+		int op; cin >> op;
+		if (op == 1) Man();
+		if (op == 2) Tea();
+		if (op == 3) break;
+
+		system("pause");
+		system("cls");
+
+	}
+
+	return 0;
+}
+

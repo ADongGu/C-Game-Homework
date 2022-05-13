@@ -1,0 +1,59 @@
+#include <iostream>
+#include <cstdio>
+using namespace std;
+struct myNode
+{
+	int p, l, r;
+	int data;
+};
+
+int sum = 0;
+void createTree(myNode p[], int n, int total)
+{
+	for (int i = 0; i < total; i++)  //初始化
+		p[i].p = p[i].l = p[i].r = -1;
+
+	for (int i = n; i < total; i++)
+	{
+		int min1, min2, l, r;   //最大值和第二大值
+		min1 = min2 = 1e9;
+		l = r = -1;
+
+
+		for (int t = 0; t < i; ++t)   //遍历寻找两个最小的点,也就是data值最小的
+		{
+			if (p[t].p == -1)
+			{
+				if (p[t].data < min1)
+				{
+					r = l;
+					l = t;
+					min2 = min1;
+					min1 = p[t].data;
+				}
+				else if (p[t].data < min2) {
+					r = t;
+					min2 = p[t].data;
+				}
+			}
+		}
+		p[i].data = min1 + min2;
+
+		sum += p[i].data;
+		p[l].p = p[r].p = i;
+		p[i].l = l;
+		p[i].r = r;
+	}
+}
+
+myNode p[100005];
+
+int main()
+{
+	int n; cin >> n;
+	for (int i = 0; i < n; i++)
+		cin >> p[i].data;
+	createTree(p, n, 2 * n - 1);
+	cout << sum;
+	return 0;
+}

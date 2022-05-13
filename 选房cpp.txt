@@ -1,0 +1,167 @@
+#include <stdio.h>
+#include <string.h>
+
+struct node {
+	char id[50];
+	char name[50];
+	char data[50];
+	int year;
+	int zc;
+	int job;
+}p[3005];
+
+
+void Swap(int i , int j) {
+	struct node t;
+	strcpy(t.data, p[i].data);
+	strcpy(t.id, p[i].id);
+	strcpy(t.name, p[i].name);
+	t.zc = p[i].zc;
+	t.job = p[i].job;
+	t.year = p[i].year;
+
+	strcpy(p[i].data, p[j].data);
+	strcpy(p[i].id, p[j].id);
+	strcpy(p[i].name, p[j].name);
+
+	p[i].year = p[j].year;
+	p[i].job = p[j].job;
+	p[i].zc = p[j].zc;
+
+	strcpy(p[j].data, t.data);
+	strcpy(p[j].id, t.id);
+	strcpy(p[j].name, t.name);
+	p[j].year = t.year;
+	p[j].job = t.job;
+	p[j].zc = t.zc;
+}
+
+int main()
+{
+	int tot = 0;
+	FILE* file;
+
+	file = fopen("f1.txt", "r");
+
+	while (1) {
+		if (feof(file)) break;
+		fscanf(file, "%s%s%s%d%d%d", p[++tot].id, p[tot].name,
+			p[tot].data, &p[tot].job, &p[tot].year, &p[tot].zc);
+	}
+
+	struct node t;
+	int i, j;
+	for (i = 1; i <= tot; i++)
+	{
+		for ( j = i + 1; j <= tot; j++)
+		{
+			if (p[i].job == p[j].job) 
+			{
+				if (p[i].year == p[j].year) 
+				{
+					if (strcmp(p[i].data, p[j].data) == 0) 
+						if (strcmp(p[i].name, p[j].name) > 0)Swap(i, j);
+					else if (strcmp(p[i].data, p[j].data) > 0) Swap(i, j);
+				}
+				else if (p[i].year > p[j].year)	Swap(i, j);
+			}
+			else if (p[i].job > p[j].job) Swap(i, j);
+		}
+	}
+
+	FILE *file1 = fopen("f2.txt", "w");
+	for (i = 1; i <= tot; i++) {
+		fprintf(file1, "%s\t%s\t%d\t%d\t%s\t%d\n", p[i].id, p[i].name, p[i].job, p[i].zc, p[i].data, p[i].year);
+	}
+	fclose(file1);
+
+
+	while (1) {
+		printf("0: 退出系统\n");
+		printf("1: 排队情况\n");
+		printf("2: 某个部门得到分房机会的信息\n");
+		printf("3: 某个部门没有分房机会的信息\n");
+		printf("4：哪个部门分房机会最多\n");
+		printf("5: 哪个部门分房机会最多\n");
+		printf("6: 根据姓名查找信息\n");
+		printf("7: 统计哪个部门获得分房资格人员比例最高。\n");
+
+		//1表示专业技术岗位，2表示管理岗位，3表示工勤岗位
+		//1表示低级职称，2表示中级职称，3表示高级职称
+
+		int op; scanf("%d", &op);
+		if (op == 1) {
+			for ( i = 1; i < 11; i++) {
+					printf("%s\t%s\t%d\t%d\t%s\t%d\n", p[i].id, p[i].name, p[i].job, p[i].zc, p[i].data, p[i].year);
+			}
+		}
+		if (op == 2) {
+			printf("要看哪个部门-1表示专业技术岗位，2表示管理岗位，3表示工勤岗位\n");
+			int pos; scanf("%d", &pos);
+			for ( i = 5; i < 11; i++) {
+				if (p[i].job == pos) {
+					printf("%s\t%s\t%d\t%d\t%s\t%d\n", p[i].id, p[i].name, p[i].job, p[i].zc, p[i].data, p[i].year);
+				}
+			}
+		}
+		if (op == 3) {
+			printf("要看哪个部门-1表示专业技术岗位，2表示管理岗位，3表示工勤岗位\n");
+			int pos; scanf("%d", &pos);
+			for (i = 1; i < 6; i++) {
+				if (p[i].job == pos) {
+					printf("%s\t%s\t%d\t%d\t%s\t%d\n", p[i].id, p[i].name, p[i].job, p[i].zc, p[i].data, p[i].year);
+				}
+			}
+		}
+		if (op == 4) {
+			int a, b, c; a = b = c = 0;
+			for ( i = 1; i < 6; i++) {
+				if (p[i].job == 1)  a++;
+				if (p[i].job == 2)  b++;
+				if (p[i].job == 3)  c++;
+			}
+
+			if (a >= b && b >= c) printf("专业技术岗位多\n");
+			else if (b >= a && a >= c) printf("管理岗位岗位多\n");
+			else if (c >= b && b >= a) printf("工勤岗位岗位多\n");
+		}
+		if (op == 5) {
+			int a, b, c; a = b = c = 0;
+			for ( i = 1; i < 6; i++) {
+				if (p[i].job == 1)  a++;
+				if (p[i].job == 2)  b++;
+				if (p[i].job == 3)  c++;
+			}
+			if (a <= b && a <= c) printf("专业技术岗位少\n");
+			else if (b <= a && b <= c) printf("管理岗位岗位少\n");
+			else if (c <= b && c <= a) printf("工勤岗位岗位少\n");
+		}
+		if (op == 6) {
+			printf("输入你的名字和工号");
+			char id[50] = "";
+			char name[50] = "";
+			scanf("%s %s", id, name);
+			for ( i = 1; i < 11; i++) {
+				if (strcmp(p[i].name, name) == 0 && strcmp(id, p[i].id) == 0) {
+					if (i >= 5) printf("没资格\n");
+					else printf("有资格\n");
+				}
+			}
+		}
+		if (op == 7) {
+			int a, b, c; a = b = c = 0;
+			for ( i = 1; i < 6; i++) {
+				if (p[i].job == 1)  a++;
+				if (p[i].job == 2)  b++;
+				if (p[i].job == 3)  c++;
+			}
+
+			if (a >= b && b >= c) printf("专业技术岗位比例高\n");
+			else if (b >= a && a >= c) printf("管理岗位岗位比例高\n");
+			else if (c >= b && b >= a) printf("工勤岗位岗位比例高\n");
+		}
+		system("pause");
+		system("cls");
+	}
+	return 0;
+}

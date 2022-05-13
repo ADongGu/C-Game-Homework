@@ -1,0 +1,224 @@
+#include <string.h>
+#include <Windows.h>
+#include <stdio.h>
+#include <time.h>
+
+int vis[500003];
+
+struct Thing {
+	// 编号， 名称， 保质期 类别 时间 价格 数量
+	char id[50], name[50], dat[50], tpe[50], tim[50];
+	double price;
+	int num;
+}a[500003];
+
+int tot;
+void show() {
+	printf("----------------------------------------------------------------------------------------------------------\n");
+}
+
+void change()
+{
+	show();
+	printf("\t\t\t\t\t\t输入要查询的商品名字: ");
+	int f = 0;
+	char id[50]; scanf("%s", id);
+	for (int i = 1; i <= tot; i++) {
+		if (strcmp(id, a[i].name) == 0) {
+			f = 1;
+			while (1)
+			{
+				system("cls");
+				printf("\t\t\t\t\t\t0：退出: \n");
+				printf("\t\t\t\t\t\t1：修改编号: \n");
+				printf("\t\t\t\t\t\t2：修改名称: \n");
+				printf("\t\t\t\t\t\t3：修改保质期: \n");
+				printf("\t\t\t\t\t\t4：修改类别: \n");
+				printf("\t\t\t\t\t\t5：修改时间: \n");
+				printf("\t\t\t\t\t\t6：修改价格: \n");
+				printf("\t\t\t\t\t\t7：修改数量: \n");
+				int op; scanf("%d", &op);
+			
+				if (op == 0) {
+					break;
+				}
+				if (op == 1) {
+					printf("\t\t\t\t\t\t请输入编号: "); scanf("%s", a[i].id);
+				}
+				if (op == 2) {
+					printf("\t\t\t\t\t\t请输入名称: "); scanf("%s", a[i].name);
+				}
+				if (op == 3) {
+					printf("\t\t\t\t\t\t请输入保质期: "); scanf("%s", a[i].dat);
+				}
+				if (op == 4) {
+					printf("\t\t\t\t\t\t请输入类别: "); scanf("%s", a[i].tpe);
+				}
+				if (op == 5) {
+					printf("\t\t\t\t\t\t请输入时间: "); scanf("%s", a[i].tim);
+				}
+				if (op == 6) {
+					printf("\t\t\t\t\t\t请输入价格: "); scanf("%lf", &a[i].price);
+				}
+				if (op == 7) {
+					printf("\t\t\t\t\t\t请输入数量: "); scanf("%d", &a[i].num);
+				}
+				system("pause");
+
+			}
+
+		}
+	}	
+	
+	if (!f) printf("\t\t\t\t\t\t未找到商品信息\n");
+	show();
+}
+void showifo(Thing x) {
+	show();
+	printf("\t\t\t\t\t编号: "); printf("%s\n", x.id);
+	printf("\t\t\t\t\t名称: "); printf("%s\n", x.name);
+	printf("\t\t\t\t\t保质期: "); printf("%s\n",x.dat);
+	printf("\t\t\t\t\t类别: "); printf("%s\n", x.tpe);
+	printf("\t\t\t\t\t时间: "); printf("%s\n", x.tim);
+	printf("\t\t\t\t\t价格: "); printf("%lf\n", x.price);
+	printf("\t\t\t\t\t数量: "); printf("%d\n", x.num);
+	show();
+}
+
+int main()
+{
+	int start, endd;
+
+	start = time(NULL);
+	char password[100];
+	show();
+	printf("\t\t\t\t\t\t输入账号： ");  scanf("%s", password);
+	printf("\t\t\t\t\t\t请输入密码: ");scanf("%s", password);
+	show();
+
+
+	
+
+	if (strcmp(password, "10086") == 0) {
+		printf("\n\n\n载入中......");
+		Sleep(3000);
+		system("cls");
+		while (1) {
+			show();
+			printf("\t\t\t\t\t\t0: 退出程序\n");
+			printf("\t\t\t\t\t\t1: 商品入库\n");
+			printf("\t\t\t\t\t\t2: 商品出库\n");
+			printf("\t\t\t\t\t\t3: 商品编号查询\n");
+			printf("\t\t\t\t\t\t4: 商品类别查询\n");
+			printf("\t\t\t\t\t\t5: 修改商品信息\n");
+			printf("\t\t\t\t\t\t6: 删除商品信息\n");
+			printf("\t\t\t\t\t\t7: 显示所有商品信息\n");
+			show();
+
+			int op; scanf("%d", &op);
+			if (op == 0) {
+				show();
+				printf("\t\t\t\t\t\t欢迎你的下次使用\n");
+				show();
+				break;
+			}
+			if (op == 1) {
+				// 编号， 名称， 保质期 类别 时间 价格 数量
+				show();
+				printf("请输入编号: "); scanf("%s", a[++tot].id);
+				printf("请输入名称: "); scanf("%s", a[tot].name);
+				printf("请输入保质期: "); scanf("%s", a[tot].dat);
+				printf("请输入类别: "); scanf("%s", a[tot].tpe);
+				printf("请输入时间: "); scanf("%s", a[tot].tim);
+				printf("请输入价格: "); scanf("%lf", &a[tot].price);
+				printf("请输入数量: "); scanf("%d", &a[tot].num);
+				show();
+			}
+			if (op == 2) {
+				show();
+				printf("\t\t\t\t\t\t输入出库的商品编号: ");
+				int f = 0;
+				char id[50]; scanf("%s", id);
+				for (int i = 1; i <= tot; i++) {
+					if (strcmp(id, a[i].id) == 0 && !vis[i]) {
+						f = 1;
+						showifo(a[i]);
+						a[i].num--;
+						if (a[i].num == 0) vis[i] = 1;
+						break;
+					}
+				}
+				if (!f) printf("\t\t\t\t\t\t未找到商品信息\n");
+				show();
+			}
+			if (op == 3) {
+				show();
+				printf("\t\t\t\t\t\t输入要查询的商品名字: ");
+				int f = 0;
+				char id[50]; scanf("%s", id);
+				for (int i = 1; i <= tot; i++) {
+					if (strcmp(id, a[i].name) == 0 && !vis[i]) {
+						f = 1;
+						printf("\t\t\t\t\t\t编号: "); printf("\t%s\n", a[i].id);
+						break;
+					}
+				}
+				if (!f) printf("\t\t\t\t\t\t未找到商品信息\n");
+				show();
+			}
+			if (op == 4) {
+				show();
+				printf("\t\t\t\t\t\t输入要查询的商品名字: ");
+				int f = 0;
+				char id[50]; scanf("%s", id);
+				for (int i = 1; i <= tot; i++) {
+					if (strcmp(id, a[i].name) == 0 && !vis[i]) {
+						f = 1;
+						printf("\t\t\t\t\t\t类别: "); printf("%s\n", a[i].tpe);
+						break;
+					}
+				}
+				if (!f) printf("\t\t\t\t\t\t未找到商品信息\n");
+				show();
+			}
+			if (op == 5) {
+				change();
+			}
+
+			if (op == 6) {
+				show();
+				printf("\t\t\t\t\t\t输入要删除的商品名字: ");
+				int f = 0;
+				char id[50]; scanf("%s", id);
+				for (int i = 1; i <= tot; i++) {
+					if (strcmp(id, a[i].name) == 0) {
+						f = 1;
+						vis[i] = 1;
+						break;
+					}
+				}
+				if (!f) printf("\t\t\t\t\t\t未找到商品信息\n");
+				show();
+			}
+			if (op == 7) {
+				show();
+				printf("\t\t\t\t\t\t编号\t名称\t保质期\t类别\t时间\t价格\t数量\n");
+
+				for (int i = 1; i <= tot; i++) {
+					if (!vis[i])
+						printf("\t\t\t\t\t\t%s\t%s\t%s\t%s\t%s\t%.3lf\t%d\n", a[i].id, a[i].name, a[i].dat, a[i].tpe, a[i].tim, a[i].price, a[i].num);
+				}
+				show();
+			}
+			system("pause");
+			system("cls");
+		}
+	}
+	else {
+		printf("\t\t\t\t\t\t密码错误\n");
+	}
+	endd = time(NULL);
+
+	printf("\t\t\t\t\t\t操作时间为:  %ds\n", endd - start);
+	return 0;
+}
